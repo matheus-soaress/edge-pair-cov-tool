@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ba-dua-agent-rt:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ba_dua_agent_rt_jar</output-path>
+    <root id="archive" name="ba-dua-agent-rt.jar">
+      <element id="module-output" name="ba-dua-agent-rt" />
+      <element id="module-output" name="ba-dua-core" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jacoco/org.jacoco.core/0.8.1/org.jacoco.core-0.8.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

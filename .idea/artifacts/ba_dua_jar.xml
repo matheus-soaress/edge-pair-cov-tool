@@ -1,0 +1,33 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ba-dua:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ba_dua_jar</output-path>
+    <root id="archive" name="ba-dua.jar">
+      <element id="module-output" name="ba-dua-agent-rt" />
+      <element id="module-output" name="ba-dua-core" />
+      <element id="module-output" name="asm-defuse" />
+      <element id="module-output" name="ba-dua-agent" />
+      <element id="module-output" name="ba-dua-cli" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/br/usp/each/saeg/saeg-commons/0.0.5/saeg-commons-0.0.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/br/usp/each/saeg/asmexplore/1.0-SNAPSHOT/asmexplore-1.0-SNAPSHOT.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/ow2/asm/asm-util/6.0/asm-util-6.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/javax/interceptor/javax.interceptor-api/1.2.2/javax.interceptor-api-1.2.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/springframework/spring-jdbc/5.3.10/spring-jdbc-5.3.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/junit/junit/4.11/junit-4.11.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/br/usp/each/saeg/opal/0.0.4/opal-0.0.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/springframework/spring-beans/5.3.10/spring-beans-5.3.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/apache/commons/commons-collections4/4.3/commons-collections4-4.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/ow2/asm/asm-analysis/9.2/asm-analysis-9.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/springframework/spring-tx/5.3.10/spring-tx-5.3.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/ow2/asm/asm-commons/6.0/asm-commons-6.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/args4j/args4j/2.32/args4j-2.32.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/ow2/asm/asm/9.2/asm-9.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jacoco/org.jacoco.core/0.8.1/org.jacoco.core-0.8.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jacoco/org.jacoco.report/0.8.1/org.jacoco.report-0.8.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/br/usp/each/ba-dua-matheus/0.0.1-SNAPSHOT/ba-dua-matheus-0.0.1-SNAPSHOT.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/ow2/asm/asm-tree/9.2/asm-tree-9.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/springframework/spring-core/5.3.10/spring-core-5.3.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/springframework/spring-jcl/5.3.10/spring-jcl-5.3.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

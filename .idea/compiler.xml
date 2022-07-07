@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="ba-dua-agent-rt" />
+        <module name="ba-dua-cli" />
+        <module name="ba-dua-tests" />
+        <module name="ba-dua-example" />
+        <module name="asm-defuse" />
+        <module name="ba-dua-agent" />
+        <module name="ba-dua-core" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>
