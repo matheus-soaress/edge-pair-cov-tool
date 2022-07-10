@@ -23,5 +23,7 @@ jobs:
         java-package: jdk
     - name: Java version
       run: java -version && javac -version
+    - name: Change permissions
+      run: chmod +x ./mvnw
     - name: Build
       run: ./mvnw verify
