@@ -49,11 +49,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>br.usp.each.saeg</groupId>
-			<artifactId>asm-defuse</artifactId>
-			<version>0.0.7</version>
-		</dependency>
-		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm-commons</artifactId>
 			<version>9.2</version>
@@ -92,7 +87,7 @@
 		<dependency>
 			<groupId>br.usp.each.saeg</groupId>
 			<artifactId>asm-defuse</artifactId>
-			<version>0.0.7-SNAPSHOT</version>
+			<version>0.0.7</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
