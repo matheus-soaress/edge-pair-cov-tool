@@ -1,0 +1,100 @@
+<!--
+
+    Copyright (c) 2022, 2022 University of Sao Paulo and Contributors.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+    Contributors:
+        Matheus Soares - initial API and implementation and/or initial documentation
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>br.usp.each.saeg</groupId>
+		<artifactId>epc-tool-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>epc-tool-core</artifactId>
+	<packaging>jar</packaging>
+	<name>epc-tool-core</name>
+	<url>https://github.com/matheus-soaress/edge-pair-cov-tool</url>
+	<description>EPC Tool Core</description>
+
+	<properties>
+		<license.header.fileLocation>../LICENSE-TEMPLATE.txt</license.header.fileLocation>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<!--
+							This file was copied from JaCoCo (http://jacoco.org)
+						-->
+						<exclude>src/main/java/br/usp/each/saeg/badua/core/internal/data/CRC64.java</exclude>
+						<exclude>src/main/java/br/usp/each/saeg/badua/core/internal/ContentTypeDetector.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>br.usp.each.saeg</groupId>
+			<artifactId>asm-defuse</artifactId>
+			<version>0.0.7</version>
+		</dependency>
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm-commons</artifactId>
+			<version>9.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>org.jacoco.core</artifactId>
+			<version>${jacoco.version}</version>
+			<!-- Avoid conflicts with asm provided by asm-defuse -->
+			<!-- The API should be the same -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.ow2.asm</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>9.2</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+			<groupId>br.usp.each.saeg</groupId>
+			<artifactId>saeg-commons</artifactId>
+			<version>0.0.5</version>
+			<scope>compile</scope>
+		</dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <version>9.2</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+			<groupId>br.usp.each.saeg</groupId>
+			<artifactId>asm-defuse</artifactId>
+			<version>0.0.7-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+</project>

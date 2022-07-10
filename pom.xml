@@ -1,29 +1,29 @@
 <!--
 
-    Copyright (c) 2014, 2020 University of Sao Paulo and Contributors.
+    Copyright (c) 2022, 2022 University of Sao Paulo and Contributors.
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
     http://www.eclipse.org/legal/epl-v10.html
 
     Contributors:
-        Roberto Araujo - initial API and implementation and/or initial documentation
+        Matheus Soares - initial API and implementation and/or initial documentation
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>br.usp.each.saeg</groupId>
-	<artifactId>ba-dua-parent</artifactId>
+	<artifactId>epc-tool-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>ba-dua-parent</name>
-	<url>https://github.com/saeg/ba-dua</url>
+	<name>epc-tool-parent</name>
+	<url>https://github.com/matheus-soaress/edge-pair-cov-tool</url>
 	<description>
-		Bitwise Algorithm - powered Definition-Use Association coverage (BA-DUA).
-		Data-flow testing coverage for Java - parent project.
+		Edge-pair coverage for Java - parent project.
 	</description>
-	<inceptionYear>2014</inceptionYear>
+
+	<inceptionYear>2022</inceptionYear>
 
 	<organization>
 		<name>University of Sao Paulo</name>
@@ -38,41 +38,21 @@
 	</licenses>
 
 	<scm>
-		<url>https://github.com/saeg/ba-dua</url>
-		<connection>scm:git:https://github.com/saeg/ba-dua.git</connection>
-		<developerConnection>scm:git:git@github.com:saeg/ba-dua.git</developerConnection>
+		<url>https://github.com/matheus-soaress/edge-pair-cov-tool</url>
+		<connection>scm:git:https://github.com/matheus-soaress/edge-pair-cov-tool.git</connection>
+		<developerConnection>scm:git:git@github.com:matheus-soaress/edge-pair-cov-tool.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
 
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
-
 	<issueManagement>
 		<system>GitHub Issues</system>
-		<url>https://github.com/saeg/ba-dua/issues</url>
+		<url>https://github.com/matheus-soaress/edge-pair-cov-tool/issues</url>
 	</issueManagement>
 
 	<ciManagement>
 		<system>GitHub Actions</system>
-		<url>https://github.com/saeg/ba-dua/actions</url>
+		<url>https://github.com/matheus-soaress/edge-pair-cov-tool/actions</url>
 	</ciManagement>
-
-	<developers>
-		<developer>
-			<email>roberto.andrioli@gmail.com</email>
-			<name>Roberto Araujo</name>
-			<url>https://github.com/andrioli</url>
-			<id>andrioli</id>
-		</developer>
-	</developers>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -80,17 +60,17 @@
 		<maven.compiler.target>1.6</maven.compiler.target>
 		<license.header.fileLocation>LICENSE-TEMPLATE.txt</license.header.fileLocation>
 		<jacoco.version>0.8.1</jacoco.version>
-		<sonar.jacoco.reportPath>../ba-dua-tests/target/jacoco.exec</sonar.jacoco.reportPath>
-		<sonar.surefire.reportsPath>../ba-dua-tests/target/surefire-reports/</sonar.surefire.reportsPath>
+		<sonar.jacoco.reportPath>../epc-tool-tests/target/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.surefire.reportsPath>../epc-tool-tests/target/surefire-reports/</sonar.surefire.reportsPath>
 	</properties>
 
 	<modules>
-		<module>ba-dua-core</module>
-		<module>ba-dua-agent-rt</module>
-		<module>ba-dua-agent</module>
-		<module>ba-dua-cli</module>
-		<module>ba-dua-tests</module>
-		<module>ba-dua</module>
+		<module>epc-tool-core</module>
+		<module>epc-tool-agent-rt</module>
+		<module>epc-tool-agent</module>
+		<module>epc-tool-cli</module>
+		<module>epc-tool-tests</module>
+		<module>epc-tool</module>
 	</modules>
 
 	<build>
@@ -269,7 +249,7 @@
 				<jdk>[1.6,)</jdk>
 			</activation>
 			<modules>
-				<module>ba-dua-example</module>
+				<module>epc-tool-example</module>
 			</modules>
 		</profile>
 		<!-- http://openjdk.java.net/jeps/182 -->

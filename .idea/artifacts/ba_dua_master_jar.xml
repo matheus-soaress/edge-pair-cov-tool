@@ -5,12 +5,12 @@
       <element id="directory" name="META-INF">
         <element id="file-copy" path="$PROJECT_DIR$/asm-defuse-master/src/main/java/META-INF/MANIFEST.MF" />
       </element>
-      <element id="module-output" name="ba-dua-agent-rt" />
-      <element id="module-output" name="ba-dua-core" />
-      <element id="module-output" name="ba-dua-cli" />
+      <element id="module-output" name="epc-tool-agent-rt" />
+      <element id="module-output" name="epc-tool-core" />
+      <element id="module-output" name="epc-tool-cli" />
       <element id="module-output" name="asm-defuse" />
-      <element id="module-output" name="ba-dua-agent" />
-      <element id="module-output" name="ba-dua-example" />
+      <element id="module-output" name="epc-tool-agent" />
+      <element id="module-output" name="epc-tool-example" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/br/usp/each/saeg/asmexplore/1.0-SNAPSHOT/asmexplore-1.0-SNAPSHOT.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/javax/interceptor/javax.interceptor-api/1.2.2/javax.interceptor-api-1.2.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/args4j/args4j/2.32/args4j-2.32.jar" path-in-jar="/" />

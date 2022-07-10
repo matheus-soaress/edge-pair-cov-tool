@@ -6,13 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="ba-dua-agent-rt" />
-        <module name="ba-dua-cli" />
-        <module name="ba-dua-tests" />
-        <module name="ba-dua-example" />
+        <module name="epc-tool-cli" />
+        <module name="epc-tool-agent" />
+        <module name="epc-tool-agent-rt" />
         <module name="asm-defuse" />
-        <module name="ba-dua-agent" />
-        <module name="ba-dua-core" />
+        <module name="epc-tool-example" />
+        <module name="epc-tool-tests" />
+        <module name="epc-tool-core" />
       </profile>
     </annotationProcessing>
   </component>
