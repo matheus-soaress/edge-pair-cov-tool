@@ -40,6 +40,8 @@ public final class IntegerInitProbe extends Probe {
         /* begin matheus */
         mv.visitInsn(Opcodes.ICONST_0);
         mv.visitVarInsn(Opcodes.ISTORE, vCoveredNos);
+        mv.visitInsn(Opcodes.ICONST_0);
+        mv.visitVarInsn(Opcodes.ISTORE, vCoveredEdges);
         /* end matheus */
     }
 

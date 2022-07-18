@@ -25,11 +25,11 @@ public class CoverageMethodTransformer extends MethodTransformer {
 
     private final String className;
 
-    private final IdGenerator idGen;
+    private final IdGenerator nodeIdGen;
 
-    public CoverageMethodTransformer(final String className, final IdGenerator idGen) {
+    public CoverageMethodTransformer(final String className, final IdGenerator nodeIdGen) {
         this.className = className;
-        this.idGen = idGen;
+        this.nodeIdGen = nodeIdGen;
     }
 
     @Override
@@ -45,67 +45,10 @@ public class CoverageMethodTransformer extends MethodTransformer {
             throw new RuntimeException(e);
         }
 
-        final DefUseFrame[] frames = analyzer.getDefUseFrames();
-        final Variable[] variables = analyzer.getVariables();
         final int[][] successors = flowAnalyzer.getSuccessors();
         final int[][] predecessors = flowAnalyzer.getPredecessors();
         final int[][] basicBlocks = flowAnalyzer.getBasicBlocks();
         final int[] leaders = flowAnalyzer.getLeaders();
-
-        /*
-        // basic block definitions
-        final Set<Variable>[] defs = (Set<Variable>[]) new Set<?>[basicBlocks.length];
-        for (int b = 0; b < basicBlocks.length; b++) {
-            defs[b] = new HashSet<Variable>();
-            for (final int insnIndex : basicBlocks[b]) {
-                defs[b].addAll(frames[insnIndex].getDefinitions());
-            }
-        }
-        */
-        /*
-        // bit-sets
-        final BitSet[] potcov = new BitSet[basicBlocks.length];
-        final BitSet[] potcovpuse = new BitSet[basicBlocks.length];
-        final BitSet[] born = new BitSet[basicBlocks.length];
-        final BitSet[] disabled = new BitSet[basicBlocks.length];
-        final BitSet[] sleepy = new BitSet[basicBlocks.length];
-        */
-        /*
-        for (int b = 0; b < basicBlocks.length; b++) {
-
-            potcov[b] = new BitSet(chains.length);
-            potcovpuse[b] = new BitSet(chains.length);
-            born[b] = new BitSet(chains.length);
-            disabled[b] = new BitSet(chains.length);
-            sleepy[b] = new BitSet(chains.length);
-
-            for (int i = 0; i < chains.length; i++) {
-
-                final DefUseChain chain = chains[i];
-
-                if (chain.isPredicateChain() ? chain.target == b : chain.use == b) {
-                    potcov[b].set(i);
-                    if (chain.isPredicateChain()) {
-                        potcovpuse[b].set(i);
-                    }
-                }
-
-                if (chain.def == b) {
-                    born[b].set(i);
-                }
-
-                if (chain.def != b && defs[b].contains(variables[chain.var])) {
-                    disabled[b].set(i);
-                }
-
-                if (chain.isPredicateChain() && chain.use != b) {
-                    sleepy[b].set(i);
-                }
-
-            }
-        }
-        */
-
 
         // begin matheus
         // inicia um conjunto do bloco que sera usado para "setar" o bit do no coberto
@@ -113,6 +56,13 @@ public class CoverageMethodTransformer extends MethodTransformer {
         for (int i = 0; i < basicBlocks.length; i++) {
             noAtualCoberto[i] = new BitSet(basicBlocks.length);
             noAtualCoberto[i].set(i);
+        }
+
+        final ArrayList<Edge> edges = visitInstruction(successors, leaders);
+        final BitSet[] arestaAtualCoberta = new BitSet[edges.size()];
+        for (int i = 0; i < edges.size(); i++) {
+            arestaAtualCoberta[i] = new BitSet(edges.size());
+            arestaAtualCoberta[i].set(i);
         }
         // end matheus
 
@@ -142,47 +92,20 @@ public class CoverageMethodTransformer extends MethodTransformer {
 
         // begin matheus
         // insere uma ponta de prova inicial para fluxo de controle (imitando o fluxo de dados)
-        final int controlFlowWindows = (basicBlocks.length + 63) / 64;
-        final int[] controlFlowIndexes = new int[controlFlowWindows];
-        for (int w = 0; w < controlFlowWindows; w++) {
-            controlFlowIndexes[w] = idGen.nextId();
+        final int nodeWindows = (basicBlocks.length + 63) / 64;
+        final int[] nodeIndexes = new int[nodeWindows];
+        for (int w = 0; w < nodeWindows; w++) {
+            nodeIndexes[w] = nodeIdGen.nextId();
             LabelFrameNode.insertBefore(insn, methodNode.instructions, init(basicBlocks, methodNode, w));
         }
         // end matheus
 
-        /*
-        for (int b = 0; b < basicBlocks.length; b++) {
-
-            final long[] lPotcov = BitSetUtils.toLongArray(potcov[b], windows);
-            final long[] lPotcovpuse = BitSetUtils.toLongArray(potcovpuse[b], windows);
-            final long[] lBorn = BitSetUtils.toLongArray(born[b], windows);
-            final long[] lDisabled = BitSetUtils.toLongArray(disabled[b], windows);
-            final long[] lSleepy = BitSetUtils.toLongArray(sleepy[b], windows);
-
-            for (int w = 0; w < windows; w++) {
-
-                final int nPredecessors = predecessors[basicBlocks[b][0]].length;
-                final Probe p = probe(chains, methodNode, w, nPredecessors == 0);
-
-                p.potcov = lPotcov[w];
-                p.potcovpuse = lPotcovpuse[w];
-                p.born = lBorn[w];
-                p.disabled = lDisabled[w];
-                p.sleepy = lSleepy[w];
-                p.singlePredecessor = nPredecessors == 1;
-
-                //LabelFrameNode.insertBefore(first[b], methodNode.instructions, p);
-
-            }
-        }
-        */
-
         // begin matheus
         // insere pontas de prova comuns
         for (int b = 0; b < basicBlocks.length; b++) {
-            final long[] lNoAtualCoberto = BitSetUtils.toLongArray(noAtualCoberto[b], controlFlowWindows);
+            final long[] lNoAtualCoberto = BitSetUtils.toLongArray(noAtualCoberto[b], nodeWindows);
 
-            for (int w = 0; w < controlFlowWindows; w++) {
+            for (int w = 0; w < nodeWindows; w++) {
                 final int nPredecessors = predecessors[basicBlocks[b][0]].length;
                 final Probe p = probe(basicBlocks, methodNode, w, nPredecessors == 0);
 
@@ -218,7 +141,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
                 }*/
                 // begin matheus
                 final Integer controlFlowType = typeOfVars(basicBlocks);
-                for (int i = 0; i < controlFlowWindows; i++) {
+                for (int i = 0; i < nodeWindows; i++) {
                     frame.local.add(controlFlowType);
                 }
                 // end matheus
@@ -229,8 +152,8 @@ public class CoverageMethodTransformer extends MethodTransformer {
                 }*/
                 // begin matheus
                 // insere ponta de prova final
-                for (int w = 0; w < controlFlowWindows; w++) {
-                    final Probe p = update(basicBlocks, methodNode, w, controlFlowIndexes[w]);
+                for (int w = 0; w < nodeWindows; w++) {
+                    final Probe p = update(basicBlocks, methodNode, w, nodeIndexes[w]);
                     LabelFrameNode.insertBefore(insn, methodNode.instructions, p);
                 }
                 // end matheus
@@ -239,7 +162,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
         }
 
         //methodNode.maxLocals = methodNode.maxLocals + windows * numOfVars(chains);
-        methodNode.maxLocals = methodNode.maxLocals + controlFlowWindows * numOfBlocks(basicBlocks.length);
+        methodNode.maxLocals = methodNode.maxLocals + nodeWindows * numOfBlocks(basicBlocks.length);
         methodNode.maxStack = methodNode.maxStack + 6;
     }
 
@@ -302,4 +225,31 @@ public class CoverageMethodTransformer extends MethodTransformer {
         }
     }
 
+    private ArrayList<Edge> visitInstruction(int[][] successors, int[] leaders) {
+        ArrayList<Edge> edges = new ArrayList<Edge>();
+        Edge edge;
+
+        for (int i = 0; i < successors.length; i++) {
+
+            for (int suc : successors[i]) {
+                if (leaders[i] != leaders[suc]) {
+
+                    // Se o nó da instrução sucessora for diferente, então
+                    // deve haver uma aresta entre o nó atual e o nó da
+                    // instrução sucessora
+                    edge = new Edge();
+                    edge.initialNode = leaders[i];
+                    edge.finalNode = leaders[suc];
+                    edges.add(edge);
+                }
+            }
+        }
+        return edges;
+    }
+
+}
+
+class Edge {
+    public int initialNode;
+    public int finalNode;
 }

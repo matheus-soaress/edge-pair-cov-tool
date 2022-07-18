@@ -46,6 +46,7 @@ public abstract class Probe extends AbstractInsnNode {
 
     // begin matheus
     public final int vCoveredNos;
+    public final int vCoveredEdges;
     // end matheus
 
     // -- fields
@@ -73,6 +74,7 @@ public abstract class Probe extends AbstractInsnNode {
          */
         /* begin matheus */
         vCoveredNos = methodNode.maxLocals;
+        vCoveredEdges = methodNode.maxLocals + 1;
         /* end matheus */
     }
 
@@ -86,7 +88,8 @@ public abstract class Probe extends AbstractInsnNode {
          */
 
         /* begin matheus */
-        vCoveredNos = methodNode.maxLocals + 2 * window;
+        vCoveredNos = methodNode.maxLocals + 4 * window;
+        vCoveredEdges = methodNode.maxLocals + 4 * window + 2;
         /* end matheus */
     }
 
