@@ -62,6 +62,7 @@ public abstract class Probe extends AbstractInsnNode {
 
     // begin matheus
     protected long noAtualCoberto;
+    protected long arestaAtualCoberta;
     // end matheus
 
     // Used by integer probes

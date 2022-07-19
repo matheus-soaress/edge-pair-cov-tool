@@ -73,6 +73,10 @@ public final class IntegerProbe extends Probe {
         mv.visitVarInsn(Opcodes.ILOAD, vCoveredNos);
         mv.visitInsn(Opcodes.IOR);
         mv.visitVarInsn(Opcodes.ISTORE, vCoveredNos);
+        InstrSupport.push(mv, (int) arestaAtualCoberta);
+        mv.visitVarInsn(Opcodes.ILOAD, vCoveredEdges);
+        mv.visitInsn(Opcodes.IOR);
+        mv.visitVarInsn(Opcodes.ISTORE, vCoveredEdges);
         /* end matheus */
 
     }

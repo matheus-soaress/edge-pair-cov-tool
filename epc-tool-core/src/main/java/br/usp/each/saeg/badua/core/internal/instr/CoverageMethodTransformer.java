@@ -53,17 +53,20 @@ public class CoverageMethodTransformer extends MethodTransformer {
         // begin matheus
         // inicia um conjunto do bloco que sera usado para "setar" o bit do no coberto
         final BitSet[] noAtualCoberto = new BitSet[basicBlocks.length];
-        for (int i = 0; i < basicBlocks.length; i++) {
-            noAtualCoberto[i] = new BitSet(basicBlocks.length);
-            noAtualCoberto[i].set(i);
+        final ArrayList<Edge> edges = visitInstruction(successors, leaders);
+        final BitSet[] arestaAtualCoberta = new BitSet[basicBlocks.length];
+        for (int b = 0; b < basicBlocks.length; b++) {
+            noAtualCoberto[b] = new BitSet(basicBlocks.length);
+            noAtualCoberto[b].set(b);
+            // inicia um conjunto do bloco que sera usado para "setar" o bit da aresta coberta
+            for (int e = 0; e < edges.size(); e++) {
+                arestaAtualCoberta[b] = new BitSet(edges.size());
+                if (edges.get(e).finalNode == b) {
+                    arestaAtualCoberta[b].set(e);
+                }
+            }
         }
 
-        final ArrayList<Edge> edges = visitInstruction(successors, leaders);
-        final BitSet[] arestaAtualCoberta = new BitSet[edges.size()];
-        for (int i = 0; i < edges.size(); i++) {
-            arestaAtualCoberta[i] = new BitSet(edges.size());
-            arestaAtualCoberta[i].set(i);
-        }
         // end matheus
 
         // first/last valid instructions
@@ -92,7 +95,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
 
         // begin matheus
         // insere uma ponta de prova inicial para fluxo de controle (imitando o fluxo de dados)
-        final int nodeWindows = (basicBlocks.length + 63) / 64;
+        final int nodeWindows = ((basicBlocks.length > edges.size() ? basicBlocks.length : edges.size()) + 63) / 64;
         final int[] nodeIndexes = new int[nodeWindows];
         for (int w = 0; w < nodeWindows; w++) {
             nodeIndexes[w] = nodeIdGen.nextId();
@@ -105,11 +108,23 @@ public class CoverageMethodTransformer extends MethodTransformer {
         for (int b = 0; b < basicBlocks.length; b++) {
             final long[] lNoAtualCoberto = BitSetUtils.toLongArray(noAtualCoberto[b], nodeWindows);
 
+            final long[] lArestaAtualCoberta;
+            if (arestaAtualCoberta[b] == null) {
+                lArestaAtualCoberta = null;
+            } else {
+                lArestaAtualCoberta = BitSetUtils.toLongArray(arestaAtualCoberta[b], nodeWindows);
+            }
+
             for (int w = 0; w < nodeWindows; w++) {
                 final int nPredecessors = predecessors[basicBlocks[b][0]].length;
                 final Probe p = probe(basicBlocks, methodNode, w, nPredecessors == 0);
 
                 p.noAtualCoberto = lNoAtualCoberto[w];
+                if (lArestaAtualCoberta != null) {
+                    p.arestaAtualCoberta = lArestaAtualCoberta[w];
+                } else {
+                    p.arestaAtualCoberta = 0L;
+                }
                 //p.singlePredecessor = nPredecessors == 1;
 
                 LabelFrameNode.insertBefore(first[b], methodNode.instructions, p);
@@ -133,15 +148,11 @@ public class CoverageMethodTransformer extends MethodTransformer {
                     frame.local.add(Opcodes.TOP);
                     size++;
                 }
-                /*final Integer type = typeOfVars(chains);
-                for (int i = 0; i < windows; i++) {
-                    frame.local.add(type);
-                    frame.local.add(type);
-                    frame.local.add(type);
-                }*/
+
                 // begin matheus
-                final Integer controlFlowType = typeOfVars(basicBlocks);
+                final Integer controlFlowType = typeOfVars(basicBlocks.length > edges.size() ? basicBlocks.length : edges.size());
                 for (int i = 0; i < nodeWindows; i++) {
+                    frame.local.add(controlFlowType);
                     frame.local.add(controlFlowType);
                 }
                 // end matheus
@@ -168,6 +179,14 @@ public class CoverageMethodTransformer extends MethodTransformer {
 
     private Probe init(final int[][] basicBlocks, final MethodNode methodNode, final int window) {
         if (basicBlocks.length <= 32) {
+            return new IntegerInitProbe(methodNode);
+        } else {
+            return new LongInitProbe(methodNode, window);
+        }
+    }
+
+    private Probe init(final ArrayList list, final MethodNode methodNode, final int window) {
+        if (list.size() <= 32) {
             return new IntegerInitProbe(methodNode);
         } else {
             return new LongInitProbe(methodNode, window);
@@ -207,16 +226,16 @@ public class CoverageMethodTransformer extends MethodTransformer {
 
     private int numOfBlocks(int basicBlocks) {
         if (basicBlocks <= 32) {
-            // one integer
-            return 1;
-        } else {
-            // one long
+            // two integers
             return 2;
+        } else {
+            // two longs
+            return 4;
         }
     }
 
-    private Integer typeOfVars(final int[][] basicBlocks) {
-        if (basicBlocks.length <= 32) {
+    private Integer typeOfVars(final int nRequisitosTeste) {
+        if (nRequisitosTeste <= 32) {
             // three integers
             return Opcodes.INTEGER;
         } else {

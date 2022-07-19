@@ -57,6 +57,17 @@ public final class IntegerUpdateProbe extends Probe {
         mv.visitInsn(Opcodes.LALOAD);
         mv.visitInsn(Opcodes.LOR);
         mv.visitInsn(Opcodes.LASTORE);
+
+        mv.visitVarInsn(Opcodes.ILOAD, vCoveredEdges);
+        mv.visitInsn(Opcodes.I2L);
+        mv.visitMethodInsn(Opcodes.INVOKESTATIC, owner,
+                InstrSupport.DATAMETHOD_NAME,
+                InstrSupport.DATAMETHOD_DESC, false);
+        InstrSupport.push(mv, index);
+        mv.visitInsn(Opcodes.DUP2_X2);
+        mv.visitInsn(Opcodes.LALOAD);
+        mv.visitInsn(Opcodes.LOR);
+        mv.visitInsn(Opcodes.LASTORE);
         /* end matheus */
     }
 
