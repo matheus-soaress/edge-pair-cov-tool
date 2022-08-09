@@ -36,62 +36,28 @@ public abstract class Probe extends AbstractInsnNode {
 
     public static final int BA_LONG_ROOT_PROBE = -8;
 
-    // -- final fields
+    public final int vCoveredElement;
 
-    /*
-    public final int vCovered;
-    public final int vAlive;
-    public final int vSleepy;
-     */
+    public final boolean edgeCoverage;
 
-    // begin matheus
-    public final int vCoveredNos;
-    public final int vCoveredEdges;
-    // end matheus
-
-    // -- fields
-
-    //protected boolean singlePredecessor;
-    /*
-    protected long potcov;
-    protected long potcovpuse;
-    protected long born;
-    protected long disabled;
-    protected long sleepy;
-    */
-
-    // begin matheus
-    protected long noAtualCoberto;
-    protected long arestaAtualCoberta;
-    // end matheus
+    protected long currentCoveredElem;
 
     // Used by integer probes
-    protected Probe(final MethodNode methodNode) {
+    protected Probe(final MethodNode methodNode, final boolean edgeCoverage) {
         super(-1);
-        /*
-        vCovered = methodNode.maxLocals;
-        vAlive = methodNode.maxLocals + 1;
-        vSleepy = methodNode.maxLocals + 2;
-         */
-        /* begin matheus */
-        vCoveredNos = methodNode.maxLocals;
-        vCoveredEdges = methodNode.maxLocals + 1;
-        /* end matheus */
+
+        vCoveredElement = methodNode.maxLocals;
+        this.edgeCoverage = edgeCoverage;
+
     }
 
     // used by long probes
-    protected Probe(final MethodNode methodNode, final int window) {
+    protected Probe(final MethodNode methodNode, final int window, final boolean edgeCoverage) {
         super(-1);
-        /*
-        vCovered = methodNode.maxLocals + 6 * window;
-        vAlive = methodNode.maxLocals + 6 * window + 2;
-        vSleepy = methodNode.maxLocals + 6 * window + 4;
-         */
 
-        /* begin matheus */
-        vCoveredNos = methodNode.maxLocals + 4 * window;
-        vCoveredEdges = methodNode.maxLocals + 4 * window + 2;
-        /* end matheus */
+        vCoveredElement = methodNode.maxLocals + 2 * window;
+        this.edgeCoverage = edgeCoverage;
+
     }
 
     @Override

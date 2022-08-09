@@ -25,12 +25,20 @@ public class InstrumentOptions {
             usage = "destination path to place the instrumented class files")
     private File dest;
 
+    @Option(name = "-edges",
+            usage = "edge coverage analysis")
+    private boolean edges;
+
     public File getSource() {
         return src;
     }
 
     public File getDestination() {
         return dest;
+    }
+
+    public boolean edges() {
+        return edges;
     }
 
 }

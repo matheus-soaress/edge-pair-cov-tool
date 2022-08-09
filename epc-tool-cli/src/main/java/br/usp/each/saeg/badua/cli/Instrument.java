@@ -36,11 +36,14 @@ public class Instrument {
 
     private final File dest;
 
+    private final boolean edges;
+
     private final Instrumenter instrumenter;
 
     public Instrument(final InstrumentOptions options) {
         this.src = options.getSource();
         this.dest = options.getDestination();
+        this.edges = options.edges();
         instrumenter = new Instrumenter(new StaticAccessGenerator(Offline.class.getName()));
     }
 
@@ -79,7 +82,7 @@ public class Instrument {
         try {
             final OutputStream output = new FileOutputStream(dest);
             try {
-                return instrumenter.instrumentAll(input, output, src.getPath());
+                return instrumenter.instrumentAll(input, output, src.getPath(), edges);
             } finally {
                 output.close();
             }

@@ -57,8 +57,8 @@ public class MethodCoverage extends CoverageNode {
     }
 
     public void increment(final ICounter counter) {
-        nodeCounter = nodeCounter.increment(counter);
-        if (nodeCounter.getCoveredCount() > 0) {
+        this.counter = this.counter.increment(counter);
+        if (this.counter.getCoveredCount() > 0) {
             methodCounter = COUNTER_0_1;
         }
     }

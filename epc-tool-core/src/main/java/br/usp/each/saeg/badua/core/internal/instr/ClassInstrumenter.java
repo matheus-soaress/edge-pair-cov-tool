@@ -32,12 +32,15 @@ public class ClassInstrumenter extends ClassVisitor implements IdGenerator {
 
     private int classProbeCount;
 
+    private boolean edges;
+
     public ClassInstrumenter(final long classId, final ClassVisitor cv,
-            final IExecutionDataAccessorGenerator accessorGenerator) {
+                             final IExecutionDataAccessorGenerator accessorGenerator, final boolean edges) {
 
         super(Opcodes.ASM9, cv);
         this.classId = classId;
         this.accessorGenerator = accessorGenerator;
+        this.edges = edges;
     }
 
     @Override
@@ -90,7 +93,7 @@ public class ClassInstrumenter extends ClassVisitor implements IdGenerator {
         else if (name.equals("<clinit>"))
             return next;
 
-        final CoverageMethodTransformer mt = new CoverageMethodTransformer(className, this);
+        final CoverageMethodTransformer mt = new CoverageMethodTransformer(className, this, edges);
 
         final MethodInstrumenter instrumenter =
                 new MethodInstrumenter(access, name, desc, signature, exceptions, next, mt);

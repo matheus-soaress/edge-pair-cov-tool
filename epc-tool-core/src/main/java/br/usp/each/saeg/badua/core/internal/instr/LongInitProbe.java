@@ -16,8 +16,8 @@ import org.objectweb.asm.tree.MethodNode;
 
 public final class LongInitProbe extends Probe {
 
-    public LongInitProbe(final MethodNode methodNode, final int window) {
-        super(methodNode, window);
+    public LongInitProbe(final MethodNode methodNode, final int window, final boolean edgeCoverage) {
+        super(methodNode, window, edgeCoverage);
     }
 
     @Override
@@ -38,7 +38,7 @@ public final class LongInitProbe extends Probe {
 
         /* begin matheus */
         mv.visitInsn(Opcodes.LCONST_0);
-        mv.visitVarInsn(Opcodes.LSTORE, vCoveredNos);
+        mv.visitVarInsn(Opcodes.LSTORE, vCoveredElement);
         /* end matheus */
     }
 

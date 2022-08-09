@@ -46,7 +46,8 @@ public class RuntimeData {
     }
 
     public long[] getData(final long id, final String name, final int size) {
-        return getExecutionData(id, name, size).getData();
+        long[] nodeData = getExecutionData(id, name, size).getData();
+        return nodeData;
     }
 
 }

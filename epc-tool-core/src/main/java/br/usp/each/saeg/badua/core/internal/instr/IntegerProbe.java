@@ -16,8 +16,8 @@ import org.objectweb.asm.tree.MethodNode;
 
 public final class IntegerProbe extends Probe {
 
-    public IntegerProbe(final MethodNode methodNode) {
-        super(methodNode);
+    public IntegerProbe(final MethodNode methodNode, final boolean edgeCoverage) {
+        super(methodNode, edgeCoverage);
     }
 
     @Override
@@ -28,56 +28,11 @@ public final class IntegerProbe extends Probe {
     @Override
     public void accept(final MethodVisitor mv) {
 
-        /*
-        // update covered
-        if (potcov != 0) {
-            mv.visitVarInsn(Opcodes.ILOAD, vAlive);
-
-            if (!singlePredecessor && potcovpuse != 0) {
-                mv.visitVarInsn(Opcodes.ILOAD, vSleepy);
-                mv.visitInsn(Opcodes.IAND);
-            }
-
-            InstrSupport.push(mv, (int) potcov);
-            mv.visitInsn(Opcodes.IAND);
-            mv.visitVarInsn(Opcodes.ILOAD, vCovered);
-            mv.visitInsn(Opcodes.IOR);
-            mv.visitVarInsn(Opcodes.ISTORE, vCovered);
-        }
-
-        // update alive
-        if (disabled != 0) {
-            InstrSupport.push(mv, ~(int) disabled);
-            mv.visitVarInsn(Opcodes.ILOAD, vAlive);
-            mv.visitInsn(Opcodes.IAND);
-        }
-        if (born != 0) {
-            if (disabled == 0) {
-                mv.visitVarInsn(Opcodes.ILOAD, vAlive);
-            }
-            InstrSupport.push(mv, (int) born);
-            mv.visitInsn(Opcodes.IOR);
-        }
-        if (disabled != 0 || born != 0) {
-            mv.visitVarInsn(Opcodes.ISTORE, vAlive);
-        }
-
-        // update sleepy
-        InstrSupport.push(mv, ~(int) sleepy);
-        mv.visitVarInsn(Opcodes.ISTORE, vSleepy);
-        */
-
-        /* begin matheus */
         // atualiza nos cobertos
-        InstrSupport.push(mv, (int) noAtualCoberto);
-        mv.visitVarInsn(Opcodes.ILOAD, vCoveredNos);
+        InstrSupport.push(mv, (int) currentCoveredElem);
+        mv.visitVarInsn(Opcodes.ILOAD, vCoveredElement);
         mv.visitInsn(Opcodes.IOR);
-        mv.visitVarInsn(Opcodes.ISTORE, vCoveredNos);
-        InstrSupport.push(mv, (int) arestaAtualCoberta);
-        mv.visitVarInsn(Opcodes.ILOAD, vCoveredEdges);
-        mv.visitInsn(Opcodes.IOR);
-        mv.visitVarInsn(Opcodes.ISTORE, vCoveredEdges);
-        /* end matheus */
+        mv.visitVarInsn(Opcodes.ISTORE, vCoveredElement);
 
     }
 

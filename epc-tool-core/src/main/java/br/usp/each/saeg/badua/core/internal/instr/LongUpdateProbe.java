@@ -21,9 +21,9 @@ public final class LongUpdateProbe extends Probe {
     public final int index;
 
     public LongUpdateProbe(final MethodNode methodNode, final int window,
-            final String owner, final int index) {
+                           final String owner, final int index, boolean edgeCoverage) {
 
-        super(methodNode, window);
+        super(methodNode, window, edgeCoverage);
         this.owner = owner;
         this.index = index;
     }
@@ -49,7 +49,7 @@ public final class LongUpdateProbe extends Probe {
          */
 
         /* begin matheus */
-        mv.visitVarInsn(Opcodes.LLOAD, vCoveredNos);
+        mv.visitVarInsn(Opcodes.LLOAD, vCoveredElement);
         mv.visitMethodInsn(Opcodes.INVOKESTATIC, owner,
                 InstrSupport.DATAMETHOD_NAME,
                 InstrSupport.DATAMETHOD_DESC, false);

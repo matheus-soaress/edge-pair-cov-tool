@@ -34,27 +34,27 @@ public class Instrumenter {
         this.accessorGenerator = accessorGenerator;
     }
 
-    public byte[] instrument(final byte[] buffer) {
+    public byte[] instrument(final byte[] buffer, final boolean edges) {
         final long classId = CRC64.checksum(buffer);
         final ClassReader reader = new ClassReader(buffer);
         final ClassWriter writer = new ClassWriter(reader, DEFAULT);
-        final ClassVisitor ci = new ClassInstrumenter(classId, writer, accessorGenerator);
+        final ClassVisitor ci = new ClassInstrumenter(classId, writer, accessorGenerator, edges);
         reader.accept(ci, ClassReader.EXPAND_FRAMES);
         return writer.toByteArray();
     }
 
-    public byte[] instrument(final byte[] buffer, final String name) throws IOException {
+    public byte[] instrument(final byte[] buffer, final String name, final Boolean edges) throws IOException {
         try {
-            return instrument(buffer);
+            return instrument(buffer, edges);
         } catch (final RuntimeException e) {
             throw instrumentError(name, e);
         }
     }
 
-    public void instrument(final InputStream input, final OutputStream output, final String name)
+    public void instrument(final InputStream input, final OutputStream output, final String name, final boolean edges)
             throws IOException {
         try {
-            output.write(instrument(Files.toByteArray(input)));
+            output.write(instrument(Files.toByteArray(input), edges));
         } catch (final RuntimeException e) {
             throw instrumentError(name, e);
         }
@@ -67,12 +67,12 @@ public class Instrumenter {
         return ex;
     }
 
-    public int instrumentAll(final InputStream input, final OutputStream output, final String name)
+    public int instrumentAll(final InputStream input, final OutputStream output, final String name, boolean edges)
             throws IOException {
         final ContentTypeDetector detector = new ContentTypeDetector(input);
         switch (detector.getType()) {
         case ContentTypeDetector.CLASSFILE:
-            instrument(detector.getInputStream(), output, name);
+            instrument(detector.getInputStream(), output, name, edges);
             return 1;
         default:
             Files.copy(detector.getInputStream(), output);

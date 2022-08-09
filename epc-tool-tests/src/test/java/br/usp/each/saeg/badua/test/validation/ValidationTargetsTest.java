@@ -54,7 +54,7 @@ public abstract class ValidationTargetsTest extends ValidationTest implements IC
     }
 
     private ExecutionDataStore execute(final byte[] bytes) throws Exception {
-        run(addClass(target.getName(), bytes));
+        run(addClass(target.getName(), bytes, false));
         final ExecutionDataStore store = new ExecutionDataStore();
         DATA.collect(store);
         return store;

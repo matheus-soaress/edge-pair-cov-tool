@@ -72,7 +72,7 @@ public class XMLCoverageWriter {
     }
 
     private static void writeCounters(final CoverageNode node, final XMLElement parent) throws IOException {
-        writeCounter(node.getNodeCounter(), "NODE", parent);
+        writeCounter(node.getCounter(), "NODE", parent);
         writeCounter(node.getMethodCounter(), "METHOD", parent);
         writeCounter(node.getClassCounter(), "CLASS", parent);
     }

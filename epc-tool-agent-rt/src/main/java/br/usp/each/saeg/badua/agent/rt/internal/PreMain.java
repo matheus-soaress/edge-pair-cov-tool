@@ -21,10 +21,10 @@ public final class PreMain {
         // No instances
     }
 
-    public static void premain(final String opts, final Instrumentation inst) throws Exception {
+    public static void premain(final String opts, final Instrumentation inst, final boolean edges) throws Exception {
         final IRuntime runtime = ModifiedSystemClassRuntime.createFor(inst, "java/lang/UnknownError");
         runtime.startup(Agent.getInstance().getData());
-        inst.addTransformer(new CoverageTransformer(runtime, PreMain.class.getPackage().getName()));
+        inst.addTransformer(new CoverageTransformer(runtime, PreMain.class.getPackage().getName(), edges));
     }
 
 }

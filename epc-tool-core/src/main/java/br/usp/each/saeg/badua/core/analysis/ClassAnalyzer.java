@@ -24,10 +24,7 @@ import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.TreeSet;
+import java.util.*;
 
 import static br.usp.each.saeg.commons.BitSetUtils.valueOf;
 
@@ -110,56 +107,17 @@ public class ClassAnalyzer extends ClassVisitor {
                     throw new RuntimeException(e);
                 }
 
-                // Variables
-                //final Variable[] vars = analyzer.getVariables();
-
                 // Instructions by line number
                 final int[] lines = getLines();
 
-                // All DU from current method node
-                /*
-                final DefUseChain[] insnChains = new DepthFirstDefUseChainSearch().search(
-                        analyzer.getDefUseFrames(), analyzer.getVariables(),
-                        flowAnalyzer.getSuccessors(),flowAnalyzer.getPredecessors());
-                */
-
-                // Only global DU
-                /* begin matheus */
                 int[][] basicBlocks = flowAnalyzer.getBasicBlocks();
-                /* end matheus */
 
-                /*
-                final DefUseChain[] globalInsnChains = DefUseChain.globals(insnChains,
-                        flowAnalyzer.getLeaders(), basicBlocks);
-                */
-
-                // DU by basic block (the ones we monitor)
-                /*
-                final DefUseChain[] blockChains = DefUseChain.toBasicBlock(insnChains,
-                        flowAnalyzer.getLeaders(), basicBlocks);
-                */
-                final BitSet data = getData(execData.getData(), basicBlocks.length);
-
+                final BitSet nodeData = getData(execData.getData(), basicBlocks.length);
 
                 final MethodCoverage methodCoverage = new MethodCoverage(name, desc);
-                /*
-                for (final DefUseChain c : globalInsnChains) {
-
-                    // Get the DU coverage status
-                    final boolean covered = data.get(indexOf(blockChains,
-                            DefUseChain.toBasicBlock(c, flowAnalyzer.getLeaders())));
-
-                    if (c.isComputationalChain()) {
-                        methodCoverage.increment(lines[c.def], lines[c.use], getVar(c, vars), covered);
-                    } else {
-                        methodCoverage.increment(lines[c.def], lines[c.use], lines[c.target], getVar(c, vars), covered);
-                    }
-                }
-                */
 
                 for (int b = 0; b < basicBlocks.length; b++) {
-                    //VERIFICAR DAQUI PARA BAIXO
-                    final boolean coveredNode = data.get(b);
+                    final boolean coveredNode = nodeData.get(b);
 
                     int[] coveredInstructions = flowAnalyzer.getBasicBlocks()[b];
                     Collection<Integer> coveredLines = new TreeSet<Integer>();
@@ -169,7 +127,7 @@ public class ClassAnalyzer extends ClassVisitor {
                     methodCoverage.increment(b, coveredNode, coveredLines);
                 }
 
-                if (methodCoverage.getNodeCounter().getTotalCount() > 0) {
+                if (methodCoverage.getCounter().getTotalCount() > 0) {
                     coverage.addMethod(methodCoverage);
                 }
             }

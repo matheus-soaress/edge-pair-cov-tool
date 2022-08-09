@@ -21,7 +21,8 @@ public abstract class ValidationTest {
     public static RuntimeData DATA;
 
     public static long[] getData(final long classId, final String className, final int size) {
-        return DATA.getExecutionData(classId, className, size).getData();
+        long[] nodeData = DATA.getExecutionData(classId, className, size).getData();
+        return nodeData;
     }
 
     protected ValidationTestClassLoader loader;
@@ -31,16 +32,16 @@ public abstract class ValidationTest {
         DATA = new RuntimeData();
     }
 
-    public Class<?> addClass(final String name, final byte[] bytes) {
-        return loader.add(name, instrument(name, bytes));
+    public Class<?> addClass(final String name, final byte[] bytes, final Boolean edges) {
+        return loader.add(name, instrument(name, bytes, edges));
     }
 
-    private byte[] instrument(final String name, final byte[] bytes) {
+    private byte[] instrument(final String name, final byte[] bytes, final Boolean edges) {
         final Instrumenter instrumenter = new Instrumenter(
                 new StaticAccessGenerator(ValidationTest.class.getName()));
 
         try {
-            return instrumenter.instrument(bytes, name);
+            return instrumenter.instrument(bytes, name, edges);
         } catch (final IOException ignore) {
             /* never happens */
             throw new RuntimeException(ignore);

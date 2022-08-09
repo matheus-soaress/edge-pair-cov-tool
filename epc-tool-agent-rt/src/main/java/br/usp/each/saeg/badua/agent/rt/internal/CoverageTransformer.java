@@ -24,10 +24,13 @@ public class CoverageTransformer implements ClassFileTransformer {
 
     private final Instrumenter instrumenter;
 
+    private final boolean edges;
+
     public CoverageTransformer(
-            final IExecutionDataAccessorGenerator accessorGenerator, final String skipPackageName) {
+            final IExecutionDataAccessorGenerator accessorGenerator, final String skipPackageName, final boolean edges) {
         this.skipPackageName = skipPackageName.replace('.', '/');
         instrumenter = new Instrumenter(accessorGenerator);
+        this.edges = edges;
     }
 
     @Override
@@ -41,7 +44,7 @@ public class CoverageTransformer implements ClassFileTransformer {
             return null;
         }
         try {
-            return instrumenter.instrument(classfileBuffer, className);
+            return instrumenter.instrument(classfileBuffer, className, edges);
         } catch (final IOException e) {
             final IllegalClassFormatException ex = new IllegalClassFormatException(e.getMessage());
             ex.initCause(e);

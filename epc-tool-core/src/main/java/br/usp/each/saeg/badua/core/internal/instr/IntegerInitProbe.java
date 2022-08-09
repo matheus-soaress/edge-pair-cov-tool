@@ -16,8 +16,8 @@ import org.objectweb.asm.tree.MethodNode;
 
 public final class IntegerInitProbe extends Probe {
 
-    public IntegerInitProbe(final MethodNode methodNode) {
-        super(methodNode);
+    public IntegerInitProbe(final MethodNode methodNode, final boolean edgeCoverage) {
+        super(methodNode, edgeCoverage);
     }
 
     @Override
@@ -27,22 +27,9 @@ public final class IntegerInitProbe extends Probe {
 
     @Override
     public void accept(final MethodVisitor mv) {
-        /*
-        mv.visitInsn(Opcodes.ICONST_0);
-        mv.visitVarInsn(Opcodes.ISTORE, vCovered);
-        mv.visitInsn(Opcodes.ICONST_0);
-        mv.visitVarInsn(Opcodes.ISTORE, vAlive);
-        /*matheus mv.visitInsn(Opcodes.ICONST_0);
-        //mv.visitInsn(Opcodes.ICONST_M1);
-        mv.visitVarInsn(Opcodes.ISTORE, vSleepy);
-        */
 
-        /* begin matheus */
         mv.visitInsn(Opcodes.ICONST_0);
-        mv.visitVarInsn(Opcodes.ISTORE, vCoveredNos);
-        mv.visitInsn(Opcodes.ICONST_0);
-        mv.visitVarInsn(Opcodes.ISTORE, vCoveredEdges);
-        /* end matheus */
+        mv.visitVarInsn(Opcodes.ISTORE, vCoveredElement);
     }
 
 }

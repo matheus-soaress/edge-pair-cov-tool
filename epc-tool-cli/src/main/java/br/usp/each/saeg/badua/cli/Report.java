@@ -64,14 +64,14 @@ public class Report {
         private void print(final String className, final MethodCoverage coverage) {
             out.println(format("%s.%s%s\t(%d/%d)", className,
                     coverage.getName(), coverage.getDesc(),
-                    coverage.getNodeCounter().getCoveredCount(),
-                    coverage.getNodeCounter().getTotalCount()));
+                    coverage.getCounter().getCoveredCount(),
+                    coverage.getCounter().getTotalCount()));
         }
 
         private void print(final ClassCoverage coverage) {
             out.println(format("%s\t(%d/%d)", coverage.getName(),
-                    coverage.getNodeCounter().getCoveredCount(),
-                    coverage.getNodeCounter().getTotalCount()));
+                    coverage.getCounter().getCoveredCount(),
+                    coverage.getCounter().getTotalCount()));
         }
 
     }

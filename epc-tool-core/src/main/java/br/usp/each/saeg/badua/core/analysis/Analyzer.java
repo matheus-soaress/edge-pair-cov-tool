@@ -52,7 +52,7 @@ public class Analyzer {
         final ClassAnalyzer ca = new ClassAnalyzer(getData(classId, reader.getClassName()), stringPool);
         reader.accept(ca, DEFAULT);
         final ClassCoverage coverage = ca.getCoverage();
-        if (coverage.getNodeCounter().getTotalCount() > 0) {
+        if (coverage.getCounter().getTotalCount() > 0) {
             visitor.visitCoverage(coverage);
         }
     }

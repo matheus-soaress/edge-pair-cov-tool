@@ -21,7 +21,8 @@ public class Offline {
     }
 
     public static long[] getData(final long classId, final String className, final int size) {
-        return DATA.getExecutionData(classId, className, size).getData();
+        long[] data = DATA.getExecutionData(classId, className, size).getData();
+        return data;
     }
 
 }

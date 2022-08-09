@@ -110,7 +110,7 @@ public class BytecodeFieldTest extends ValidationTest {
         cw.visitEnd();
 
         final byte[] bytes = cw.toByteArray();
-        final Class<?> klass = addClass(className, bytes);
+        final Class<?> klass = addClass(className, bytes, false);
         method = klass.getMethod(methodName);
         field = klass.getField(fieldName);
         object = klass.newInstance();

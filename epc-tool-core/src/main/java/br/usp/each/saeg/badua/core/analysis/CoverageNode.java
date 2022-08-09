@@ -19,7 +19,7 @@ public class CoverageNode {
 
     private final String name;
 
-    protected CounterImpl nodeCounter;
+    protected CounterImpl counter;
 
     protected CounterImpl methodCounter;
 
@@ -27,7 +27,7 @@ public class CoverageNode {
 
     public CoverageNode(final String name) {
         this.name = name;
-        this.nodeCounter = COUNTER_0_0;
+        this.counter = COUNTER_0_0;
         this.methodCounter = COUNTER_0_0;
         this.classCounter = COUNTER_0_0;
     }
@@ -36,8 +36,8 @@ public class CoverageNode {
         return name;
     }
 
-    public ICounter getNodeCounter() {
-        return nodeCounter;
+    public ICounter getCounter() {
+        return counter;
     }
 
     public ICounter getMethodCounter() {
@@ -49,7 +49,7 @@ public class CoverageNode {
     }
 
     public void increment(final CoverageNode child) {
-        nodeCounter = nodeCounter.increment(child.getNodeCounter());
+        counter = counter.increment(child.getCounter());
         methodCounter = methodCounter.increment(child.getMethodCounter());
         classCounter = classCounter.increment(child.getClassCounter());
     }
