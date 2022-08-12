@@ -175,7 +175,7 @@ public class ClassAnalyzer extends ClassVisitor {
 
         for (int e = 0; e < edges.size(); e++) {
             final boolean coveredEdge = nodeData.get(e);
-
+            edges.get(e).covered = coveredEdge;
             methodCoverage.increment(e, coveredEdge, edges);
         }
 
