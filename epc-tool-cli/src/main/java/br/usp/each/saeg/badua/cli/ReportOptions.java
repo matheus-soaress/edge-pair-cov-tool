@@ -33,6 +33,9 @@ public class ReportOptions {
     @Option(name = "-xml", usage = "write XML report")
     private File xmlFile;
 
+    @Option(name = "-edges", usage = "write edge coverage report")
+    private boolean edges;
+
     public File getInput() {
         return input;
     }
@@ -51,6 +54,10 @@ public class ReportOptions {
 
     public File getXMLFile() {
         return xmlFile;
+    }
+
+    public boolean isEdges() {
+        return edges;
     }
 
 }

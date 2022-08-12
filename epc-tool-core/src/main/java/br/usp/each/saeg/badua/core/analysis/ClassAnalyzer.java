@@ -13,6 +13,7 @@ package br.usp.each.saeg.badua.core.analysis;
 import br.usp.each.saeg.asm.defuse.*;
 import br.usp.each.saeg.badua.core.data.ExecutionData;
 import br.usp.each.saeg.badua.core.internal.instr.InstrSupport;
+import br.usp.each.saeg.badua.core.util.Edge;
 import org.jacoco.core.internal.analysis.StringPool;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
@@ -40,10 +41,13 @@ public class ClassAnalyzer extends ClassVisitor {
 
     private int window;
 
-    public ClassAnalyzer(final ExecutionData execData, final StringPool stringPool) {
+    private boolean edgeCoverage;
+
+    public ClassAnalyzer(final ExecutionData execData, final StringPool stringPool, final boolean edgeCoverage) {
         super(Opcodes.ASM9);
         this.execData = execData;
         this.stringPool = stringPool;
+        this.edgeCoverage = edgeCoverage;
     }
 
     @Override
@@ -110,25 +114,18 @@ public class ClassAnalyzer extends ClassVisitor {
                 // Instructions by line number
                 final int[] lines = getLines();
 
-                int[][] basicBlocks = flowAnalyzer.getBasicBlocks();
+                final ArrayList<Edge> edges = Edge.getEdges(flowAnalyzer.getSuccessors(), flowAnalyzer.getLeaders());
 
-                final BitSet nodeData = getData(execData.getData(), basicBlocks.length);
+                final BitSet nodeData;
 
                 final MethodCoverage methodCoverage = new MethodCoverage(name, desc);
 
-                for (int b = 0; b < basicBlocks.length; b++) {
-                    final boolean coveredNode = nodeData.get(b);
-
-                    int[] coveredInstructions = flowAnalyzer.getBasicBlocks()[b];
-                    Collection<Integer> coveredLines = new TreeSet<Integer>();
-                    for (int i = 0; i < coveredInstructions.length; i++) {
-                        coveredLines.add(lines[coveredInstructions[i]]);
-                    }
-                    methodCoverage.increment(b, coveredNode, coveredLines);
-                }
-
-                if (methodCoverage.getCounter().getTotalCount() > 0) {
-                    coverage.addMethod(methodCoverage);
+                if (edgeCoverage) {
+                    nodeData = getData(execData.getData(), edges.size());
+                    edgeReport(flowAnalyzer, edges, nodeData, methodCoverage);
+                } else {
+                    nodeData = getData(execData.getData(), flowAnalyzer.getBasicBlocks().length);
+                    nodeReport(lines, flowAnalyzer, nodeData, methodCoverage);
                 }
             }
 
@@ -151,37 +148,40 @@ public class ClassAnalyzer extends ClassVisitor {
                 return lines;
             }
 
-            public String getVar(final DefUseChain c, final Variable[] vars) {
-                return getVar(vars[c.var], c.use);
-            }
-
-            public String getVar(final Value v, final int insn) {
-                if (v instanceof StaticField) {
-                    return ((StaticField) v).name;
-                } else if (v instanceof ObjectField) {
-                    final ObjectField objField = (ObjectField) v;
-                    final String var = getVar(objField.getRoot(), insn);
-                    if (var != null) {
-                        return String.format("%s.%s", var, objField.name);
-                    }
-                } else if (v instanceof Local) {
-                    return getVar((Local) v, insn);
-                }
-                return null;
-            }
-
-            public String getVar(final Local local, final int insn) {
-                for (final LocalVariableNode lvn : localVariables) {
-                    if (lvn.index == local.var
-                            && insn >= instructions.indexOf(lvn.start)
-                            && insn < instructions.indexOf(lvn.end)) {
-                        return lvn.name;
-                    }
-                }
-                return null;
-            }
-
         };
+    }
+
+    private void nodeReport(final int[] lines, final FlowAnalyzer<Value> flowAnalyzer, final BitSet nodeData, final MethodCoverage methodCoverage) {
+        final int[][] basicBlocks = flowAnalyzer.getBasicBlocks();
+        for (int b = 0; b < basicBlocks.length; b++) {
+            final boolean coveredNode = nodeData.get(b);
+
+            int[] coveredInstructions = basicBlocks[b];
+            Collection<Integer> coveredLines = new TreeSet<Integer>();
+            for (int i = 0; i < coveredInstructions.length; i++) {
+                coveredLines.add(lines[coveredInstructions[i]]);
+            }
+            methodCoverage.increment(coveredNode, coveredLines);
+        }
+
+        if (methodCoverage.getCounter().getTotalCount() > 0) {
+            coverage.addMethod(methodCoverage);
+        }
+    }
+
+    private void edgeReport(final FlowAnalyzer<Value> flowAnalyzer, List<Edge> edges, final BitSet nodeData, final MethodCoverage methodCoverage) {
+        final int[][] basicBlocks = flowAnalyzer.getBasicBlocks();
+
+
+        for (int e = 0; e < edges.size(); e++) {
+            final boolean coveredEdge = nodeData.get(e);
+
+            methodCoverage.increment(e, coveredEdge, edges);
+        }
+
+        if (methodCoverage.getCounter().getTotalCount() > 0) {
+            coverage.addMethod(methodCoverage);
+        }
     }
 
     private int incrementWindow(final int n) {

@@ -150,14 +150,14 @@ public class CoverageMethodTransformer extends MethodTransformer {
     private void edgeInstrument(int[][] successors, int[][] predecessors, int[][] basicBlocks, int[] leaders, MethodNode methodNode) {
 
         final ArrayList<Edge> edges = Edge.getEdges(successors, leaders);
-        final BitSet[] arestaAtualCoberta = new BitSet[basicBlocks.length];
+        final BitSet[] arestaAtualAtiva = new BitSet[basicBlocks.length];
 
         for (int b = 0; b < basicBlocks.length; b++) {
-            // inicia um conjunto do bloco que sera usado para "setar" o bit da aresta coberta
+            // inicia um conjunto do bloco que sera usado para "setar" o bit da aresta ativa
+            arestaAtualAtiva[b] = new BitSet(edges.size());
             for (int e = 0; e < edges.size(); e++) {
-                arestaAtualCoberta[b] = new BitSet(edges.size());
-                if (edges.get(e).finalNode == b) {
-                    arestaAtualCoberta[b].set(e);
+                if (edges.get(e).initialNode == b || edges.get(e).finalNode == b) {
+                    arestaAtualAtiva[b].set(e);
                 }
             }
         }
@@ -196,19 +196,19 @@ public class CoverageMethodTransformer extends MethodTransformer {
         // insere pontas de prova comuns
         for (int b = 0; b < basicBlocks.length; b++) {
 
-            final long[] lArestaAtualCoberta;
-            if (arestaAtualCoberta[b] == null) {
-                lArestaAtualCoberta = null;
+            final long[] lArestaAtualAtiva;
+            if (arestaAtualAtiva[b] == null) {
+                lArestaAtualAtiva = null;
             } else {
-                lArestaAtualCoberta = BitSetUtils.toLongArray(arestaAtualCoberta[b], edgeWindows);
+                lArestaAtualAtiva = BitSetUtils.toLongArray(arestaAtualAtiva[b], edgeWindows);
             }
 
             for (int w = 0; w < edgeWindows; w++) {
                 final int nPredecessors = predecessors[basicBlocks[b][0]].length;
                 final Probe p = probe(edges.size(), methodNode, w, nPredecessors == 0);
 
-                if (lArestaAtualCoberta != null) {
-                    p.currentCoveredElem = lArestaAtualCoberta[w];
+                if (lArestaAtualAtiva != null) {
+                    p.currentCoveredElem = lArestaAtualAtiva[w];
                 } else {
                     p.currentCoveredElem = 0L;
                 }
@@ -236,6 +236,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
                 // begin matheus
                 final Integer controlFlowType = typeOfVars(edges.size());
                 for (int i = 0; i < edgeWindows; i++) {
+                    frame.local.add(controlFlowType);
                     frame.local.add(controlFlowType);
                 }
                 // end matheus
@@ -296,21 +297,23 @@ public class CoverageMethodTransformer extends MethodTransformer {
     }
 
     private int numOfBlocks(int size) {
+        int numVarProbe = 1;
+        if (edgeCoverage) {
+            numVarProbe++;
+        }
         if (size <= 32) {
             // two integers
-            return 1;
+            return 1 * numVarProbe;
         } else {
             // two longs
-            return 2;
+            return 2 * numVarProbe;
         }
     }
 
     private Integer typeOfVars(final int nRequisitosTeste) {
         if (nRequisitosTeste <= 32) {
-            // three integers
             return Opcodes.INTEGER;
         } else {
-            // three longs
             return Opcodes.LONG;
         }
     }

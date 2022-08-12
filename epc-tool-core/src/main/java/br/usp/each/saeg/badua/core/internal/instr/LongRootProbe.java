@@ -27,25 +27,24 @@ public final class LongRootProbe extends Probe {
 
     @Override
     public void accept(final MethodVisitor mv) {
-        /*
-        if (born != 0) {
-            mv.visitLdcInsn(born);
-            mv.visitVarInsn(Opcodes.LSTORE, vAlive);
-        }
-        if (sleepy != 0) {
-            mv.visitLdcInsn(~sleepy);
-            mv.visitVarInsn(Opcodes.LSTORE, vSleepy);
-        }
+        if(edgeCoverage) {
+            mv.visitLdcInsn(currentCoveredElem);
+            mv.visitVarInsn(Opcodes.LLOAD, vPotCoveredElement);
+            mv.visitInsn(Opcodes.LAND);
+            mv.visitVarInsn(Opcodes.LLOAD, vCoveredElement);
+            mv.visitInsn(Opcodes.LOR);
+            mv.visitVarInsn(Opcodes.LSTORE, vCoveredElement);
 
-         */
 
-        /* begin matheus */
-        // atualiza nos cobertos
-        mv.visitLdcInsn(currentCoveredElem);
-        mv.visitVarInsn(Opcodes.LLOAD, vCoveredElement);
-        mv.visitInsn(Opcodes.LOR);
-        mv.visitVarInsn(Opcodes.LSTORE, vCoveredElement);
-        /* end matheus */
+            mv.visitLdcInsn(currentCoveredElem);
+            mv.visitVarInsn(Opcodes.LSTORE, vPotCoveredElement);
+        } else {
+            // atualiza nos cobertos
+            mv.visitLdcInsn(currentCoveredElem);
+            mv.visitVarInsn(Opcodes.LLOAD, vCoveredElement);
+            mv.visitInsn(Opcodes.LOR);
+            mv.visitVarInsn(Opcodes.LSTORE, vCoveredElement);
+        }
     }
 
 }

@@ -28,56 +28,24 @@ public final class LongProbe extends Probe {
     @Override
     public void accept(final MethodVisitor mv) {
 
-        /*
-        // update covered
-        if (potcov != 0) {
-            mv.visitVarInsn(Opcodes.LLOAD, vAlive);
-
-            if (!singlePredecessor && potcovpuse != 0) {
-                mv.visitVarInsn(Opcodes.LLOAD, vSleepy);
-                mv.visitInsn(Opcodes.LAND);
-            }
-
-            mv.visitLdcInsn(potcov);
+        if(edgeCoverage) {
+            mv.visitLdcInsn(currentCoveredElem);
+            mv.visitVarInsn(Opcodes.LLOAD, vPotCoveredElement);
             mv.visitInsn(Opcodes.LAND);
-            mv.visitVarInsn(Opcodes.LLOAD, vCovered);
+            mv.visitVarInsn(Opcodes.LLOAD, vCoveredElement);
             mv.visitInsn(Opcodes.LOR);
-            mv.visitVarInsn(Opcodes.LSTORE, vCovered);
-        }
+            mv.visitVarInsn(Opcodes.LSTORE, vCoveredElement);
 
-        // update alive
-        if (disabled != 0) {
-            mv.visitLdcInsn(~disabled);
-            mv.visitVarInsn(Opcodes.LLOAD, vAlive);
-            mv.visitInsn(Opcodes.LAND);
-        }
-        if (born != 0) {
-            if (disabled == 0) {
-                mv.visitVarInsn(Opcodes.LLOAD, vAlive);
-            }
-            mv.visitLdcInsn(born);
-            mv.visitInsn(Opcodes.LOR);
-        }
-        if (disabled != 0 || born != 0) {
-            mv.visitVarInsn(Opcodes.LSTORE, vAlive);
-        }
 
-        // update sleepy
-        if (sleepy != 0) {
-            mv.visitLdcInsn(~sleepy);
+            mv.visitLdcInsn(currentCoveredElem);
+            mv.visitVarInsn(Opcodes.LSTORE, vPotCoveredElement);
         } else {
-            mv.visitLdcInsn(-1L);
+            // atualiza nos cobertos
+            mv.visitLdcInsn(currentCoveredElem);
+            mv.visitVarInsn(Opcodes.LLOAD, vCoveredElement);
+            mv.visitInsn(Opcodes.LOR);
+            mv.visitVarInsn(Opcodes.LSTORE, vCoveredElement);
         }
-        mv.visitVarInsn(Opcodes.LSTORE, vSleepy);
-         */
-
-        /* begin matheus */
-        // atualiza nos cobertos
-        mv.visitLdcInsn(currentCoveredElem);
-        mv.visitVarInsn(Opcodes.LLOAD, vCoveredElement);
-        mv.visitInsn(Opcodes.LOR);
-        mv.visitVarInsn(Opcodes.LSTORE, vCoveredElement);
-        /* end matheus */
     }
 
 }

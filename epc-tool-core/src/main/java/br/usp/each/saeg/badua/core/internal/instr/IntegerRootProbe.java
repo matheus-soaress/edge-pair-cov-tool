@@ -28,10 +28,23 @@ public final class IntegerRootProbe extends Probe {
     @Override
     public void accept(final MethodVisitor mv) {
 
-        InstrSupport.push(mv, (int) currentCoveredElem);
-        mv.visitVarInsn(Opcodes.ILOAD, vCoveredElement);
-        mv.visitInsn(Opcodes.IOR);
-        mv.visitVarInsn(Opcodes.ISTORE, vCoveredElement);
+        if(edgeCoverage) {
+            InstrSupport.push(mv, (int) currentCoveredElem);
+            mv.visitVarInsn(Opcodes.ILOAD, vPotCoveredElement);
+            mv.visitInsn(Opcodes.IAND);
+            mv.visitVarInsn(Opcodes.ILOAD, vCoveredElement);
+            mv.visitInsn(Opcodes.IOR);
+            mv.visitVarInsn(Opcodes.ISTORE, vCoveredElement);
+
+
+            InstrSupport.push(mv, (int) currentCoveredElem);
+            mv.visitVarInsn(Opcodes.ISTORE, vPotCoveredElement);
+        } else {
+            InstrSupport.push(mv, (int) currentCoveredElem);
+            mv.visitVarInsn(Opcodes.ILOAD, vCoveredElement);
+            mv.visitInsn(Opcodes.IOR);
+            mv.visitVarInsn(Opcodes.ISTORE, vCoveredElement);
+        }
 
     }
 

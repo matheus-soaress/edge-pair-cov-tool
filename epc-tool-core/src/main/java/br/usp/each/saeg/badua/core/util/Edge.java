@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Edge {
     public int initialNode;
     public int finalNode;
+    public boolean covered;
 
     public static ArrayList<Edge> getEdges(int[][] successors, int[] leaders) {
         ArrayList<Edge> edges = new ArrayList<Edge>();

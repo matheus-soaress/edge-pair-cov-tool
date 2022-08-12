@@ -28,6 +28,10 @@ public final class IntegerInitProbe extends Probe {
     @Override
     public void accept(final MethodVisitor mv) {
 
+        if (edgeCoverage) {
+            mv.visitInsn(Opcodes.ICONST_0);
+            mv.visitVarInsn(Opcodes.ISTORE, vPotCoveredElement);
+        }
         mv.visitInsn(Opcodes.ICONST_0);
         mv.visitVarInsn(Opcodes.ISTORE, vCoveredElement);
     }

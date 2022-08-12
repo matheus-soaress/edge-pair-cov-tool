@@ -15,6 +15,7 @@ import static org.jacoco.core.internal.analysis.CounterImpl.COUNTER_1_0;
 
 import java.util.*;
 
+import br.usp.each.saeg.badua.core.util.Edge;
 import org.jacoco.core.analysis.ICounter;
 
 public class MethodCoverage extends CoverageNode {
@@ -36,6 +37,8 @@ public class MethodCoverage extends CoverageNode {
         }
     });
 
+    private final List<Edge> edges = new ArrayList<Edge>();
+
     private final String desc;
 
     public MethodCoverage(final String name, final String desc) {
@@ -56,6 +59,10 @@ public class MethodCoverage extends CoverageNode {
         return lines;
     }
 
+    public List<Edge> getEdges() {
+        return edges;
+    }
+
     public void increment(final ICounter counter) {
         this.counter = this.counter.increment(counter);
         if (this.counter.getCoveredCount() > 0) {
@@ -63,25 +70,15 @@ public class MethodCoverage extends CoverageNode {
         }
     }
 
-    public void increment(final int def, final int use, final String var, final boolean covered) {
-        if (def != UNKNOWN_LINE && use != UNKNOWN_LINE && var != null) {
-            defUses.add(new SourceLineDefUseChain(def, use, var, covered));
-        }
-        increment(covered ? COUNTER_0_1 : COUNTER_1_0);
-    }
-
-    public void increment(final int def, final int use, final int target, final String var, final boolean covered) {
-        if (def != UNKNOWN_LINE && use != UNKNOWN_LINE && target != UNKNOWN_LINE && var != null) {
-            defUses.add(new SourceLineDefUseChain(def, use, target, var, covered));
-        }
-        increment(covered ? COUNTER_0_1 : COUNTER_1_0);
-    }
-
-    public void increment(final int block, final boolean covered, Collection<Integer> lines) {
+    public void increment(final boolean covered, Collection<Integer> lines) {
         for (Integer line: lines) {
             this.lines.add(new SourceCodeLine(line, covered));
         }
         increment(covered ? COUNTER_0_1 : COUNTER_1_0);
     }
 
+    public void increment(final int edge, final boolean covered, final List<Edge> edges) {
+        this.edges.add(edges.get(edge));
+        increment(covered ? COUNTER_0_1 : COUNTER_1_0);
+    }
 }

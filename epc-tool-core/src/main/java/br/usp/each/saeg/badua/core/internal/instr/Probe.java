@@ -38,6 +38,8 @@ public abstract class Probe extends AbstractInsnNode {
 
     public final int vCoveredElement;
 
+    public final int vPotCoveredElement;
+
     public final boolean edgeCoverage;
 
     protected long currentCoveredElem;
@@ -47,6 +49,11 @@ public abstract class Probe extends AbstractInsnNode {
         super(-1);
 
         vCoveredElement = methodNode.maxLocals;
+        if (edgeCoverage) {
+            vPotCoveredElement = methodNode.maxLocals + 1;
+        } else {
+            vPotCoveredElement = 0;
+        }
         this.edgeCoverage = edgeCoverage;
 
     }
@@ -55,7 +62,13 @@ public abstract class Probe extends AbstractInsnNode {
     protected Probe(final MethodNode methodNode, final int window, final boolean edgeCoverage) {
         super(-1);
 
-        vCoveredElement = methodNode.maxLocals + 2 * window;
+        if (edgeCoverage) {
+            vCoveredElement = methodNode.maxLocals + 4 * window;
+            vPotCoveredElement = methodNode.maxLocals + 4 * window + 2;
+        } else {
+            vCoveredElement = methodNode.maxLocals + 2 * window;
+            vPotCoveredElement = 0;
+        }
         this.edgeCoverage = edgeCoverage;
 
     }
