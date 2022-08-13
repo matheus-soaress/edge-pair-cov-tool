@@ -37,7 +37,22 @@ public class MethodCoverage extends CoverageNode {
         }
     });
 
-    private final List<Edge> edges = new ArrayList<Edge>();
+    private final Collection<Edge> edges = new TreeSet<Edge>(new Comparator<Edge>() {
+        @Override
+        public int compare(Edge o1, Edge o2) {
+            if (o1.initialNode > o2.initialNode) {
+                return 1;
+            } else if (o1.initialNode < o2.initialNode) {
+                return -1;
+            } else if (o1.finalNode > o2.finalNode) {
+                return 1;
+            } else if (o1.finalNode < o2.finalNode) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+    });
 
     private final String desc;
 
@@ -59,7 +74,7 @@ public class MethodCoverage extends CoverageNode {
         return lines;
     }
 
-    public List<Edge> getEdges() {
+    public Collection<Edge> getEdges() {
         return edges;
     }
 
@@ -77,8 +92,11 @@ public class MethodCoverage extends CoverageNode {
         increment(covered ? COUNTER_0_1 : COUNTER_1_0);
     }
 
-    public void increment(final int edge, final boolean covered, final List<Edge> edges) {
-        this.edges.add(edges.get(edge));
+    public void increment(final int edge, final boolean covered, final List<Edge> edges, final Integer lastLineBegin, final Integer firstLineEnd) {
+        Edge e = edges.get(edge);
+        e.lastLineInitialNode = lastLineBegin;
+        e.firstLineFinalNode = firstLineEnd;
+        this.edges.add(e);
         increment(covered ? COUNTER_0_1 : COUNTER_1_0);
     }
 }

@@ -3,11 +3,25 @@ package br.usp.each.saeg.badua.core.util;
 import java.util.ArrayList;
 
 public class Edge {
+
     public int initialNode;
     public int finalNode;
+
+    public int lastLineInitialNode;
+    public int firstLineFinalNode;
+
     public boolean covered;
 
-    public static ArrayList<Edge> getEdges(int[][] successors, int[] leaders) {
+    public Edge () {
+
+    }
+
+    public Edge (final int initialNode, final int finalNode) {
+        this.initialNode = initialNode;
+        this.finalNode = finalNode;
+    }
+
+    public static ArrayList<Edge> getEdges(final int[][] successors, final int[] leaders) {
         ArrayList<Edge> edges = new ArrayList<Edge>();
         Edge edge;
 

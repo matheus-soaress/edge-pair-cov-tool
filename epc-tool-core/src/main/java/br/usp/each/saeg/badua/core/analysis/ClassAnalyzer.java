@@ -122,7 +122,7 @@ public class ClassAnalyzer extends ClassVisitor {
 
                 if (edgeCoverage) {
                     nodeData = getData(execData.getData(), edges.size());
-                    edgeReport(flowAnalyzer, edges, nodeData, methodCoverage);
+                    edgeReport(lines, flowAnalyzer, edges, nodeData, methodCoverage);
                 } else {
                     nodeData = getData(execData.getData(), flowAnalyzer.getBasicBlocks().length);
                     nodeReport(lines, flowAnalyzer, nodeData, methodCoverage);
@@ -156,11 +156,7 @@ public class ClassAnalyzer extends ClassVisitor {
         for (int b = 0; b < basicBlocks.length; b++) {
             final boolean coveredNode = nodeData.get(b);
 
-            int[] coveredInstructions = basicBlocks[b];
-            Collection<Integer> coveredLines = new TreeSet<Integer>();
-            for (int i = 0; i < coveredInstructions.length; i++) {
-                coveredLines.add(lines[coveredInstructions[i]]);
-            }
+            Collection<Integer> coveredLines = getCoveredLines(lines, basicBlocks[b]);
             methodCoverage.increment(coveredNode, coveredLines);
         }
 
@@ -169,19 +165,33 @@ public class ClassAnalyzer extends ClassVisitor {
         }
     }
 
-    private void edgeReport(final FlowAnalyzer<Value> flowAnalyzer, List<Edge> edges, final BitSet nodeData, final MethodCoverage methodCoverage) {
+    private void edgeReport(int[] lines, final FlowAnalyzer<Value> flowAnalyzer, List<Edge> edges, final BitSet nodeData, final MethodCoverage methodCoverage) {
         final int[][] basicBlocks = flowAnalyzer.getBasicBlocks();
 
 
         for (int e = 0; e < edges.size(); e++) {
             final boolean coveredEdge = nodeData.get(e);
-            edges.get(e).covered = coveredEdge;
-            methodCoverage.increment(e, coveredEdge, edges);
+            Edge current = edges.get(e);
+            current.covered = coveredEdge;
+            Collection<Integer> coveredLines = getCoveredLines(lines, basicBlocks[current.initialNode]);
+            Integer lastLineBegin = (Integer) coveredLines.toArray()[coveredLines.size() - 1];
+            coveredLines = getCoveredLines(lines, basicBlocks[current.finalNode]);
+            Integer firstLineEnd = (Integer) coveredLines.toArray()[0];
+            methodCoverage.increment(e, coveredEdge, edges, lastLineBegin, firstLineEnd);
         }
 
         if (methodCoverage.getCounter().getTotalCount() > 0) {
             coverage.addMethod(methodCoverage);
         }
+    }
+
+    private Collection<Integer> getCoveredLines(int[] lines, int[] basicBlock) {
+        int[] coveredInstructions = basicBlock;
+        Collection<Integer> coveredLines = new TreeSet<Integer>();
+        for (int i = 0; i < coveredInstructions.length; i++) {
+            coveredLines.add(lines[coveredInstructions[i]]);
+        }
+        return coveredLines;
     }
 
     private int incrementWindow(final int n) {
