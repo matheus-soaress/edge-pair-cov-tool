@@ -21,6 +21,14 @@ public class Edge implements Comparable {
         this.finalNode = finalNode;
     }
 
+    public Edge (final Edge edge) {
+        this.initialNode = edge.initialNode;
+        this.finalNode = edge.finalNode;
+        this.covered = edge.covered;
+        this.lastLineInitialNode = edge.lastLineInitialNode;
+        this.firstLineFinalNode = edge.firstLineFinalNode;
+    }
+
     public static ArrayList<Edge> getEdges(final int[][] successors, final int[] leaders) {
         ArrayList<Edge> edges = new ArrayList<Edge>();
         Edge edge;
@@ -51,7 +59,7 @@ public class Edge implements Comparable {
         for (Edge edge : edges) {
             for (Edge otherEdge : edges) {
                 if (edge.finalNode == otherEdge.initialNode) {
-                    edgePairs.add(new Edge[] {edge, otherEdge});
+                    edgePairs.add(new Edge[] {new Edge(edge), new Edge (otherEdge)});
                 }
             }
         }
