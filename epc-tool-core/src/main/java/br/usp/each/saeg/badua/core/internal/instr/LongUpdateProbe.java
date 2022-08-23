@@ -21,9 +21,9 @@ public final class LongUpdateProbe extends Probe {
     public final int index;
 
     public LongUpdateProbe(final MethodNode methodNode, final int window,
-                           final String owner, final int index, boolean edgeCoverage) {
+                           final String owner, final int index, final boolean edgeCoverage, final boolean edgePairCoverage) {
 
-        super(methodNode, window, edgeCoverage);
+        super(methodNode, window, edgeCoverage, edgePairCoverage);
         this.owner = owner;
         this.index = index;
     }

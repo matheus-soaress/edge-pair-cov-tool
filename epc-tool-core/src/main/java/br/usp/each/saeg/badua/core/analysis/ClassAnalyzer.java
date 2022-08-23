@@ -43,11 +43,14 @@ public class ClassAnalyzer extends ClassVisitor {
 
     private boolean edgeCoverage;
 
-    public ClassAnalyzer(final ExecutionData execData, final StringPool stringPool, final boolean edgeCoverage) {
+    private boolean edgePairCoverage;
+
+    public ClassAnalyzer(final ExecutionData execData, final StringPool stringPool, final boolean edgeCoverage, final boolean edgePairCoverage) {
         super(Opcodes.ASM9);
         this.execData = execData;
         this.stringPool = stringPool;
         this.edgeCoverage = edgeCoverage;
+        this.edgePairCoverage = edgePairCoverage;
     }
 
     @Override
@@ -114,13 +117,18 @@ public class ClassAnalyzer extends ClassVisitor {
                 // Instructions by line number
                 final int[] lines = getLines();
 
-                final ArrayList<Edge> edges = Edge.getEdges(flowAnalyzer.getSuccessors(), flowAnalyzer.getLeaders());
 
                 final BitSet nodeData;
 
                 final MethodCoverage methodCoverage = new MethodCoverage(name, desc);
 
-                if (edgeCoverage) {
+                if (edgePairCoverage) {
+                    final ArrayList<Edge> edges = Edge.getEdges(flowAnalyzer.getSuccessors(), flowAnalyzer.getLeaders());
+                    final ArrayList<Edge[]> edgePairs = Edge.getEdgePairs(edges);
+                    nodeData = getData(execData.getData(), edgePairs.size());
+                    edgePairReport(lines, flowAnalyzer, edgePairs, nodeData, methodCoverage);
+                } else if (edgeCoverage) {
+                    final ArrayList<Edge> edges = Edge.getEdges(flowAnalyzer.getSuccessors(), flowAnalyzer.getLeaders());
                     nodeData = getData(execData.getData(), edges.size());
                     edgeReport(lines, flowAnalyzer, edges, nodeData, methodCoverage);
                 } else {
@@ -173,16 +181,48 @@ public class ClassAnalyzer extends ClassVisitor {
             final boolean coveredEdge = nodeData.get(e);
             Edge current = edges.get(e);
             current.covered = coveredEdge;
+
             Collection<Integer> coveredLines = getCoveredLines(lines, basicBlocks[current.initialNode]);
             Integer lastLineBegin = (Integer) coveredLines.toArray()[coveredLines.size() - 1];
             coveredLines = getCoveredLines(lines, basicBlocks[current.finalNode]);
             Integer firstLineEnd = (Integer) coveredLines.toArray()[0];
+
             methodCoverage.increment(e, coveredEdge, edges, lastLineBegin, firstLineEnd);
         }
 
         if (methodCoverage.getCounter().getTotalCount() > 0) {
             coverage.addMethod(methodCoverage);
         }
+    }
+
+    private void edgePairReport(int[] lines, FlowAnalyzer<Value> flowAnalyzer, ArrayList<Edge[]> edgePairs, BitSet nodeData, MethodCoverage methodCoverage) {
+
+        final int[][] basicBlocks = flowAnalyzer.getBasicBlocks();
+
+        for (int p = 0; p < edgePairs.size(); p++) {
+            final boolean coveredEdgePair = nodeData.get(p);
+            Edge[] current = edgePairs.get(p);
+            current[0].covered = coveredEdgePair;
+            current[1].covered = coveredEdgePair;
+
+            Collection<Integer> coveredLines = getCoveredLines(lines, basicBlocks[current[0].initialNode]);
+            Integer lastLineBeginFirstEdge = (Integer) coveredLines.toArray()[coveredLines.size() - 1];
+            coveredLines = getCoveredLines(lines, basicBlocks[current[0].finalNode]);
+            Integer firstLineEndFirstEdge = (Integer) coveredLines.toArray()[0];
+
+            coveredLines = getCoveredLines(lines, basicBlocks[current[1].initialNode]);
+            Integer lastLineBeginLastEdge = (Integer) coveredLines.toArray()[coveredLines.size() - 1];
+            coveredLines = getCoveredLines(lines, basicBlocks[current[1].finalNode]);
+            Integer firstLineEndLastEdge = (Integer) coveredLines.toArray()[0];
+
+            methodCoverage.increment(p, coveredEdgePair, edgePairs, lastLineBeginFirstEdge,
+                    firstLineEndFirstEdge, lastLineBeginLastEdge, firstLineEndLastEdge);
+        }
+
+        if (methodCoverage.getCounter().getTotalCount() > 0) {
+            coverage.addMethod(methodCoverage);
+        }
+
     }
 
     private Collection<Integer> getCoveredLines(int[] lines, int[] basicBlock) {

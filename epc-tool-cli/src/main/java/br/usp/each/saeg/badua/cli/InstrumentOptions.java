@@ -29,6 +29,10 @@ public class InstrumentOptions {
             usage = "edge coverage analysis")
     private boolean edges;
 
+    @Option(name = "-edge-pairs",
+            usage = "edge-pair coverage analysis")
+    private boolean edgePairs;
+
     public File getSource() {
         return src;
     }
@@ -39,6 +43,10 @@ public class InstrumentOptions {
 
     public boolean edges() {
         return edges;
+    }
+
+    public boolean edgePairs() {
+        return edgePairs;
     }
 
 }

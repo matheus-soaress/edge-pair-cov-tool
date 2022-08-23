@@ -46,7 +46,7 @@ public abstract class ValidationTargetsTest extends ValidationTest implements IC
         final byte[] bytes = ValidationTestClassLoader.getClassDataAsBytes(target);
         final ExecutionDataStore store = execute(bytes);
         final Analyzer analyzer = new Analyzer(store, this);
-        analyzer.analyze(bytes, false);
+        analyzer.analyze(bytes, false, false);
         Assert.assertEquals(1, classes.size());
         for (final MethodCoverage coverage : classes.iterator().next().getMethods()) {
             defUses.addAll(coverage.getDefUses());
@@ -54,7 +54,7 @@ public abstract class ValidationTargetsTest extends ValidationTest implements IC
     }
 
     private ExecutionDataStore execute(final byte[] bytes) throws Exception {
-        run(addClass(target.getName(), bytes, false));
+        run(addClass(target.getName(), bytes, false, false));
         final ExecutionDataStore store = new ExecutionDataStore();
         DATA.collect(store);
         return store;
@@ -72,7 +72,7 @@ public abstract class ValidationTargetsTest extends ValidationTest implements IC
     }
 
     public void assertDU(final int def, final int use, final int target,
-            final String var, final boolean covered) {
+                         final String var, final boolean covered) {
         for (final SourceLineDefUseChain defUse : defUses) {
             if (defUse.def == def
                     && defUse.use == use

@@ -36,6 +36,9 @@ public class ReportOptions {
     @Option(name = "-edges", usage = "write edge coverage report")
     private boolean edges;
 
+    @Option(name = "-edge-pairs", usage = "write edge coverage report")
+    private boolean edgePairs;
+
     public File getInput() {
         return input;
     }
@@ -56,8 +59,12 @@ public class ReportOptions {
         return xmlFile;
     }
 
-    public boolean isEdges() {
+    public boolean edges() {
         return edges;
+    }
+
+    public boolean edgePairs() {
+        return edgePairs;
     }
 
 }

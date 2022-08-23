@@ -92,7 +92,7 @@ public class BytecodeMaxTest extends ValidationTest {
         cw.visitEnd();
 
         final byte[] bytes = cw.toByteArray();
-        final Class<?> klass = addClass(className, bytes, false);
+        final Class<?> klass = addClass(className, bytes, false, false);
         method = klass.getMethod(methodName, int[].class, int.class);
         classId = CRC64.checksum(bytes);
     }

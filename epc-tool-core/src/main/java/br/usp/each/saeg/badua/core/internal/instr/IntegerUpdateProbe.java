@@ -4,9 +4,9 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
+ * <p>
  * Contributors:
- *     Matheus Soares - initial API and implementation and/or initial documentation
+ * Matheus Soares - initial API and implementation and/or initial documentation
  */
 package br.usp.each.saeg.badua.core.internal.instr;
 
@@ -20,8 +20,8 @@ public final class IntegerUpdateProbe extends Probe {
 
     public final int index;
 
-    public IntegerUpdateProbe(final MethodNode methodNode, final String owner, final int index, boolean edgeCoverage) {
-        super(methodNode, edgeCoverage);
+    public IntegerUpdateProbe(final MethodNode methodNode, final String owner, final int index, boolean edgeCoverage, final boolean edgePairCoverage) {
+        super(methodNode, edgeCoverage, edgePairCoverage);
         this.owner = owner;
         this.index = index;
     }

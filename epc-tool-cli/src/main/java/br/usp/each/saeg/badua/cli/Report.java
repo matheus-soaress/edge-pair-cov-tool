@@ -106,10 +106,13 @@ public class Report {
 
     private final boolean edges;
 
+    private final boolean edgePairs;
+
     public Report(final ReportOptions options) throws IOException {
         classes = options.getClasses();
         xmlFile = options.getXMLFile();
-        edges = options.isEdges();
+        edges = options.edges();
+        edgePairs = options.edgePairs();
 
         visitor = new CoverageVisitor(new PrintCoverage(
                 System.out, options.showClasses(), options.showMethods()));
@@ -131,7 +134,7 @@ public class Report {
         for (final File file : files) {
             final InputStream input = new FileInputStream(file);
             try {
-                analyzer.analyzeAll(input, file.getPath(), edges);
+                analyzer.analyzeAll(input, file.getPath(), edges, edgePairs);
             } finally {
                 input.close();
             }
@@ -140,7 +143,7 @@ public class Report {
         if (xmlFile != null) {
             final FileOutputStream output = new FileOutputStream(xmlFile);
             try {
-                XMLCoverageWriter.write(visitor.classes, output, edges);
+                XMLCoverageWriter.write(visitor.classes, output, edges, edgePairs);
             } finally {
                 output.close();
             }

@@ -16,8 +16,8 @@ import org.objectweb.asm.tree.MethodNode;
 
 public final class IntegerProbe extends Probe {
 
-    public IntegerProbe(final MethodNode methodNode, final boolean edgeCoverage) {
-        super(methodNode, edgeCoverage);
+    public IntegerProbe(final MethodNode methodNode, final boolean edgeCoverage, final boolean edgePairCoverage) {
+        super(methodNode, edgeCoverage, edgePairCoverage);
     }
 
     @Override
@@ -29,19 +29,34 @@ public final class IntegerProbe extends Probe {
     public void accept(final MethodVisitor mv) {
 
         // atualiza nos cobertos
-        if(edgeCoverage) {
-            InstrSupport.push(mv, (int) currentCoveredElem);
-            mv.visitVarInsn(Opcodes.ILOAD, vPotCoveredElement);
+        if(edgePairCoverage) {
+            InstrSupport.push(mv, (int) currentActiveElement);
+            mv.visitVarInsn(Opcodes.ILOAD, vParentActiveElement);
+            mv.visitInsn(Opcodes.IAND);
+            mv.visitVarInsn(Opcodes.ILOAD, vGrandparentActiveElement);
+            mv.visitInsn(Opcodes.IAND);
+            mv.visitVarInsn(Opcodes.ILOAD, vCoveredElement);
+            mv.visitInsn(Opcodes.IOR);
+            mv.visitVarInsn(Opcodes.ISTORE, vCoveredElement);
+
+            mv.visitVarInsn(Opcodes.ILOAD, vParentActiveElement);
+            mv.visitVarInsn(Opcodes.ISTORE, vGrandparentActiveElement);
+
+            InstrSupport.push(mv, (int) currentActiveElement);
+            mv.visitVarInsn(Opcodes.ISTORE, vParentActiveElement);
+        } else if(edgeCoverage) {
+            InstrSupport.push(mv, (int) currentActiveElement);
+            mv.visitVarInsn(Opcodes.ILOAD, vParentActiveElement);
             mv.visitInsn(Opcodes.IAND);
             mv.visitVarInsn(Opcodes.ILOAD, vCoveredElement);
             mv.visitInsn(Opcodes.IOR);
             mv.visitVarInsn(Opcodes.ISTORE, vCoveredElement);
 
 
-            InstrSupport.push(mv, (int) currentCoveredElem);
-            mv.visitVarInsn(Opcodes.ISTORE, vPotCoveredElement);
+            InstrSupport.push(mv, (int) currentActiveElement);
+            mv.visitVarInsn(Opcodes.ISTORE, vParentActiveElement);
         } else {
-            InstrSupport.push(mv, (int) currentCoveredElem);
+            InstrSupport.push(mv, (int) currentActiveElement);
             mv.visitVarInsn(Opcodes.ILOAD, vCoveredElement);
             mv.visitInsn(Opcodes.IOR);
             mv.visitVarInsn(Opcodes.ISTORE, vCoveredElement);

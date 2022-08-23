@@ -32,16 +32,16 @@ public abstract class ValidationTest {
         DATA = new RuntimeData();
     }
 
-    public Class<?> addClass(final String name, final byte[] bytes, final Boolean edges) {
-        return loader.add(name, instrument(name, bytes, edges));
+    public Class<?> addClass(final String name, final byte[] bytes, final Boolean edges, final boolean edgePairs) {
+        return loader.add(name, instrument(name, bytes, edges, edgePairs));
     }
 
-    private byte[] instrument(final String name, final byte[] bytes, final Boolean edges) {
+    private byte[] instrument(final String name, final byte[] bytes, final Boolean edges, final boolean edgePairs) {
         final Instrumenter instrumenter = new Instrumenter(
                 new StaticAccessGenerator(ValidationTest.class.getName()));
 
         try {
-            return instrumenter.instrument(bytes, name, edges);
+            return instrumenter.instrument(bytes, name, edges, edgePairs);
         } catch (final IOException ignore) {
             /* never happens */
             throw new RuntimeException(ignore);

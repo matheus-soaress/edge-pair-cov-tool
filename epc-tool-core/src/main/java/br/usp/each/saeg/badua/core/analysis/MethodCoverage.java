@@ -37,17 +37,15 @@ public class MethodCoverage extends CoverageNode {
         }
     });
 
-    private final Collection<Edge> edges = new TreeSet<Edge>(new Comparator<Edge>() {
+    private final Collection<Edge> edges = new TreeSet<Edge>();
+
+    private final Collection<Edge[]> edgePairs = new TreeSet<Edge[]>(new Comparator<Edge[]>() {
         @Override
-        public int compare(Edge o1, Edge o2) {
-            if (o1.initialNode > o2.initialNode) {
-                return 1;
-            } else if (o1.initialNode < o2.initialNode) {
-                return -1;
-            } else if (o1.finalNode > o2.finalNode) {
-                return 1;
-            } else if (o1.finalNode < o2.finalNode) {
-                return -1;
+        public int compare(Edge[] o1, Edge[] o2) {
+            if (o1[0].compareTo(o2[0]) != 0) {
+                return o1[0].compareTo(o2[0]);
+            } else if (o1[1].compareTo(o2[1]) != 0) {
+                return o1[1].compareTo(o2[1]);
             } else {
                 return 0;
             }
@@ -78,6 +76,10 @@ public class MethodCoverage extends CoverageNode {
         return edges;
     }
 
+    public Collection<Edge[]> getEdgePairs() {
+        return edgePairs;
+    }
+
     public void increment(final ICounter counter) {
         this.counter = this.counter.increment(counter);
         if (this.counter.getCoveredCount() > 0) {
@@ -97,6 +99,18 @@ public class MethodCoverage extends CoverageNode {
         e.lastLineInitialNode = lastLineBegin;
         e.firstLineFinalNode = firstLineEnd;
         this.edges.add(e);
+        increment(covered ? COUNTER_0_1 : COUNTER_1_0);
+    }
+
+    public void increment(final int edgePair, final boolean covered, final List<Edge[]> edgePairs,
+                          Integer lastLineBeginFirstEdge, Integer firstLineEndFirstEdge,
+                          Integer lastLineBeginLastEdge, Integer firstLineEndLastEdge) {
+        Edge[] ep = edgePairs.get(edgePair);
+        ep[0].lastLineInitialNode = lastLineBeginFirstEdge;
+        ep[0].firstLineFinalNode = firstLineEndFirstEdge;
+        ep[1].lastLineInitialNode = lastLineBeginLastEdge;
+        ep[1].firstLineFinalNode = firstLineEndLastEdge;
+        this.edgePairs.add(ep);
         increment(covered ? COUNTER_0_1 : COUNTER_1_0);
     }
 }

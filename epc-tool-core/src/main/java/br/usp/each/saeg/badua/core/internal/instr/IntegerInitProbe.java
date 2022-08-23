@@ -16,8 +16,9 @@ import org.objectweb.asm.tree.MethodNode;
 
 public final class IntegerInitProbe extends Probe {
 
-    public IntegerInitProbe(final MethodNode methodNode, final boolean edgeCoverage) {
-        super(methodNode, edgeCoverage);
+    public IntegerInitProbe(final MethodNode methodNode, final boolean edgeCoverage,
+                            final boolean edgePairCoverage) {
+        super(methodNode, edgeCoverage, edgePairCoverage);
     }
 
     @Override
@@ -28,9 +29,13 @@ public final class IntegerInitProbe extends Probe {
     @Override
     public void accept(final MethodVisitor mv) {
 
-        if (edgeCoverage) {
+        if (edgePairCoverage) {
             mv.visitInsn(Opcodes.ICONST_0);
-            mv.visitVarInsn(Opcodes.ISTORE, vPotCoveredElement);
+            mv.visitVarInsn(Opcodes.ISTORE, vGrandparentActiveElement);
+        }
+        if (edgeCoverage || edgePairCoverage) {
+            mv.visitInsn(Opcodes.ICONST_0);
+            mv.visitVarInsn(Opcodes.ISTORE, vParentActiveElement);
         }
         mv.visitInsn(Opcodes.ICONST_0);
         mv.visitVarInsn(Opcodes.ISTORE, vCoveredElement);

@@ -34,27 +34,27 @@ public class Instrumenter {
         this.accessorGenerator = accessorGenerator;
     }
 
-    public byte[] instrument(final byte[] buffer, final boolean edges) {
+    public byte[] instrument(final byte[] buffer, final boolean edges, final boolean edgePairs) {
         final long classId = CRC64.checksum(buffer);
         final ClassReader reader = new ClassReader(buffer);
         final ClassWriter writer = new ClassWriter(reader, DEFAULT);
-        final ClassVisitor ci = new ClassInstrumenter(classId, writer, accessorGenerator, edges);
+        final ClassVisitor ci = new ClassInstrumenter(classId, writer, accessorGenerator, edges, edgePairs);
         reader.accept(ci, ClassReader.EXPAND_FRAMES);
         return writer.toByteArray();
     }
 
-    public byte[] instrument(final byte[] buffer, final String name, final Boolean edges) throws IOException {
+    public byte[] instrument(final byte[] buffer, final String name, final Boolean edges, final boolean edgePairs) throws IOException {
         try {
-            return instrument(buffer, edges);
+            return instrument(buffer, edges, edgePairs);
         } catch (final RuntimeException e) {
             throw instrumentError(name, e);
         }
     }
 
-    public void instrument(final InputStream input, final OutputStream output, final String name, final boolean edges)
+    public void instrument(final InputStream input, final OutputStream output, final String name, final boolean edges, final boolean edgePairs)
             throws IOException {
         try {
-            output.write(instrument(Files.toByteArray(input), edges));
+            output.write(instrument(Files.toByteArray(input), edges, edgePairs));
         } catch (final RuntimeException e) {
             throw instrumentError(name, e);
         }
@@ -67,16 +67,16 @@ public class Instrumenter {
         return ex;
     }
 
-    public int instrumentAll(final InputStream input, final OutputStream output, final String name, boolean edges)
+    public int instrumentAll(final InputStream input, final OutputStream output, final String name, final boolean edges, boolean edgePairs)
             throws IOException {
         final ContentTypeDetector detector = new ContentTypeDetector(input);
         switch (detector.getType()) {
-        case ContentTypeDetector.CLASSFILE:
-            instrument(detector.getInputStream(), output, name, edges);
-            return 1;
-        default:
-            Files.copy(detector.getInputStream(), output);
-            return 0;
+            case ContentTypeDetector.CLASSFILE:
+                instrument(detector.getInputStream(), output, name, edges, edgePairs);
+                return 1;
+            default:
+                Files.copy(detector.getInputStream(), output);
+                return 0;
         }
     }
 

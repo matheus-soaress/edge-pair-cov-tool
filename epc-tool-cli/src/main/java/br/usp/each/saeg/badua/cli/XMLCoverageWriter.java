@@ -29,31 +29,38 @@ public class XMLCoverageWriter {
         // No instances
     }
 
-    public static void write(final List<ClassCoverage> classes, final FileOutputStream output, final boolean edges)
+    public static void write(final List<ClassCoverage> classes, final FileOutputStream output,
+                             final boolean edges, final boolean edgePairs)
             throws IOException {
         final CoverageNode sum = new CoverageNode("");
         final XMLElement root = new XMLDocument("report", null, null, "UTF-8", true, output);
         for (final ClassCoverage c : classes) {
-            writeClass(c, root, edges);
+            writeClass(c, root, edges, edgePairs);
             sum.increment(c);
         }
-        writeCounters(sum, root, edges);
+        writeCounters(sum, root, edges, edgePairs);
         root.close();
     }
 
-    private static void writeClass(final ClassCoverage c, final XMLElement parent, final boolean edges) throws IOException {
+    private static void writeClass(final ClassCoverage c, final XMLElement parent,
+                                   final boolean edges, final boolean edgePairs) throws IOException {
         final XMLElement element = createChild(parent, "class", c.getName());
         for (final MethodCoverage m : c.getMethods()) {
-            writeMethod(m, element, edges);
+            writeMethod(m, element, edges, edgePairs);
         }
-        writeCounters(c, element, edges);
+        writeCounters(c, element, edges, edgePairs);
     }
 
-    private static void writeMethod(final MethodCoverage m, final XMLElement parent, final boolean edges) throws IOException {
+    private static void writeMethod(final MethodCoverage m, final XMLElement parent,
+                                    final boolean edges, final boolean edgePairs) throws IOException {
         final XMLElement element = createChild(parent, "method", m.getName());
         element.attr("desc", m.getDesc());
 
-        if (edges) {
+        if (edgePairs) {
+            for (final Edge[] edgePair : m.getEdgePairs()) {
+                writeEdgePair(edgePair, element);
+            }
+        } else if (edges) {
             for (final Edge edge : m.getEdges()) {
                 writeEdge(edge, element);
             }
@@ -62,14 +69,23 @@ public class XMLCoverageWriter {
                 writeLine(line, element);
             }
         }
-        writeCounters(m, element, edges);
+        writeCounters(m, element, edges, edgePairs);
     }
 
     private static void writeEdge(Edge edge, XMLElement parent) throws IOException {
         final XMLElement element = parent.element("edge");
-        element.attr("beg", edge.initialNode);
-        element.attr("end", edge.finalNode);
+        element.attr("beg", edge.lastLineInitialNode);
+        element.attr("end", edge.firstLineFinalNode);
         element.attr("covered", edge.covered ? 1 : 0);
+    }
+
+    private static void writeEdgePair(Edge[] edgePair, XMLElement parent) throws IOException {
+        final XMLElement element = parent.element("edge-pair");
+        element.attr("covered", edgePair[0].covered && edgePair[1].covered ? 1 : 0);
+        element.attr("beg-1", edgePair[0].lastLineInitialNode);
+        element.attr("end-1", edgePair[0].firstLineFinalNode);
+        element.attr("beg-2", edgePair[1].lastLineInitialNode);
+        element.attr("end-2", edgePair[1].firstLineFinalNode);
     }
 
     private static void writeDU(final SourceLineDefUseChain du, final XMLElement parent) throws IOException {
@@ -83,8 +99,11 @@ public class XMLCoverageWriter {
         element.attr("covered", du.covered ? 1 : 0);
     }
 
-    private static void writeCounters(final CoverageNode node, final XMLElement parent, final boolean edges) throws IOException {
-        if (edges) {
+    private static void writeCounters(final CoverageNode node, final XMLElement parent,
+                                      final boolean edges, final boolean edgePairs) throws IOException {
+        if (edgePairs) {
+            writeCounter(node.getCounter(), "EDGE-PAIR", parent);
+        } else if (edges) {
             writeCounter(node.getCounter(), "EDGE", parent);
         } else {
             writeCounter(node.getCounter(), "NODE", parent);

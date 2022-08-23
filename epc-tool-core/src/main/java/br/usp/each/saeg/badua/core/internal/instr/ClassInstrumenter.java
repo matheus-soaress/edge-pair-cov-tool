@@ -34,13 +34,16 @@ public class ClassInstrumenter extends ClassVisitor implements IdGenerator {
 
     private boolean edges;
 
+    private boolean edgePairs;
+
     public ClassInstrumenter(final long classId, final ClassVisitor cv,
-                             final IExecutionDataAccessorGenerator accessorGenerator, final boolean edges) {
+                             final IExecutionDataAccessorGenerator accessorGenerator, final boolean edges, final boolean edgePairs) {
 
         super(Opcodes.ASM9, cv);
         this.classId = classId;
         this.accessorGenerator = accessorGenerator;
         this.edges = edges;
+        this.edgePairs = edgePairs;
     }
 
     @Override
@@ -86,14 +89,14 @@ public class ClassInstrumenter extends ClassVisitor implements IdGenerator {
         // 1. Interfaces
         if (interfaceType)
             return next;
-        // 2. Abstract methods
+            // 2. Abstract methods
         else if ((access & Opcodes.ACC_ABSTRACT) != 0)
             return next;
-        // 3. Static class initialization
+            // 3. Static class initialization
         else if (name.equals("<clinit>"))
             return next;
 
-        final CoverageMethodTransformer mt = new CoverageMethodTransformer(className, this, edges);
+        final CoverageMethodTransformer mt = new CoverageMethodTransformer(className, this, edges, edgePairs);
 
         final MethodInstrumenter instrumenter =
                 new MethodInstrumenter(access, name, desc, signature, exceptions, next, mt);

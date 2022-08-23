@@ -46,10 +46,10 @@ public class Analyzer {
         return new ExecutionData(classId, className, null);
     }
 
-    public void analyze(final byte[] buffer, final boolean edges) {
+    public void analyze(final byte[] buffer, final boolean edges, final boolean edgePairs) {
         final long classId = CRC64.checksum(buffer);
         final ClassReader reader = new ClassReader(buffer);
-        final ClassAnalyzer ca = new ClassAnalyzer(getData(classId, reader.getClassName()), stringPool, edges);
+        final ClassAnalyzer ca = new ClassAnalyzer(getData(classId, reader.getClassName()), stringPool, edges, edgePairs);
         reader.accept(ca, DEFAULT);
         final ClassCoverage coverage = ca.getCoverage();
         if (coverage.getCounter().getTotalCount() > 0) {
@@ -57,9 +57,9 @@ public class Analyzer {
         }
     }
 
-    public void analyze(final InputStream input, final String location, final boolean edges) throws IOException {
+    public void analyze(final InputStream input, final String location, final boolean edges, final boolean edgePairs) throws IOException {
         try {
-            analyze(Files.toByteArray(input), edges);
+            analyze(Files.toByteArray(input), edges, edgePairs);
         } catch (final RuntimeException e) {
             throw analyzeError(location, e);
         }
@@ -72,11 +72,11 @@ public class Analyzer {
         return ex;
     }
 
-    public int analyzeAll(final InputStream input, final String location, final boolean edges) throws IOException {
+    public int analyzeAll(final InputStream input, final String location, final boolean edges, final boolean edgePairs) throws IOException {
         final ContentTypeDetector detector = new ContentTypeDetector(input);
         switch (detector.getType()) {
         case ContentTypeDetector.CLASSFILE:
-            analyze(detector.getInputStream(), location, edges);
+            analyze(detector.getInputStream(), location, edges, edgePairs);
             return 1;
         default:
             return 0;

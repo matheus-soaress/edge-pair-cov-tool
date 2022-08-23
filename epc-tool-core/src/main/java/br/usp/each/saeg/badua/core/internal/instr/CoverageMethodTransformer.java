@@ -30,10 +30,13 @@ public class CoverageMethodTransformer extends MethodTransformer {
 
     private final boolean edgeCoverage;
 
-    public CoverageMethodTransformer(final String className, final IdGenerator nodeIdGen, final boolean edges) {
+    private final boolean edgePairCoverage;
+
+    public CoverageMethodTransformer(final String className, final IdGenerator nodeIdGen, final boolean edges, final boolean edgePairs) {
         this.className = className;
         this.nodeIdGen = nodeIdGen;
         this.edgeCoverage = edges;
+        this.edgePairCoverage = edgePairs;
     }
 
     @Override
@@ -49,7 +52,10 @@ public class CoverageMethodTransformer extends MethodTransformer {
             throw new RuntimeException(e);
         }
 
-        if (edgeCoverage) {
+        if (edgePairCoverage) {
+            System.out.println("Edge-pair argument OK");
+            edgePairInstrument(flowAnalyzer.getSuccessors(), flowAnalyzer.getPredecessors(), flowAnalyzer.getBasicBlocks(), flowAnalyzer.getLeaders(), methodNode);
+        } else if (edgeCoverage) {
             edgeInstrument(flowAnalyzer.getSuccessors(), flowAnalyzer.getPredecessors(), flowAnalyzer.getBasicBlocks(), flowAnalyzer.getLeaders(), methodNode);
         } else {
             nodeInstrument(flowAnalyzer.getSuccessors(), flowAnalyzer.getPredecessors(), flowAnalyzer.getBasicBlocks(), flowAnalyzer.getLeaders(), methodNode);
@@ -58,7 +64,6 @@ public class CoverageMethodTransformer extends MethodTransformer {
     }
 
     private void nodeInstrument(int[][] successors, int[][] predecessors, int[][] basicBlocks, int[] leaders, MethodNode methodNode) {
-
         // inicia um conjunto do bloco que sera usado para "setar" o bit do no coberto
         final BitSet[] noAtualCoberto = new BitSet[basicBlocks.length];
         for (int b = 0; b < basicBlocks.length; b++) {
@@ -106,7 +111,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
                 final int nPredecessors = predecessors[basicBlocks[b][0]].length;
                 final Probe p = probe(basicBlocks.length, methodNode, w, nPredecessors == 0);
 
-                p.currentCoveredElem = lNoAtualCoberto[w];
+                p.currentActiveElement = lNoAtualCoberto[w];
 
                 LabelFrameNode.insertBefore(first[b], methodNode.instructions, p);
             }
@@ -148,7 +153,6 @@ public class CoverageMethodTransformer extends MethodTransformer {
     }
 
     private void edgeInstrument(int[][] successors, int[][] predecessors, int[][] basicBlocks, int[] leaders, MethodNode methodNode) {
-
         final ArrayList<Edge> edges = Edge.getEdges(successors, leaders);
         final BitSet[] arestaAtualAtiva = new BitSet[basicBlocks.length];
 
@@ -208,9 +212,9 @@ public class CoverageMethodTransformer extends MethodTransformer {
                 final Probe p = probe(edges.size(), methodNode, w, nPredecessors == 0);
 
                 if (lArestaAtualAtiva != null) {
-                    p.currentCoveredElem = lArestaAtualAtiva[w];
+                    p.currentActiveElement = lArestaAtualAtiva[w];
                 } else {
-                    p.currentCoveredElem = 0L;
+                    p.currentActiveElement = 0L;
                 }
 
                 LabelFrameNode.insertBefore(first[b], methodNode.instructions, p);
@@ -257,35 +261,144 @@ public class CoverageMethodTransformer extends MethodTransformer {
 
     }
 
+    private void edgePairInstrument(int[][] successors, int[][] predecessors, int[][] basicBlocks, int[] leaders, MethodNode methodNode) {
+
+        final ArrayList<Edge> edges = Edge.getEdges(successors, leaders);
+        final ArrayList<Edge[]> edgePairs = Edge.getEdgePairs(edges);
+
+        final BitSet[] parDeArestasAtualAtivo = new BitSet[basicBlocks.length];
+
+        for (int b = 0; b < basicBlocks.length; b++) {
+            // inicia um conjunto do bloco que sera usado para "setar" o bit do par de arestas ativo
+            parDeArestasAtualAtivo[b] = new BitSet(edgePairs.size());
+            for (int e = 0; e < edgePairs.size(); e++) {
+                if (edgePairs.get(e)[0].initialNode == b || edgePairs.get(e)[0].finalNode == b || edgePairs.get(e)[1].finalNode == b) {
+                    parDeArestasAtualAtivo[b].set(e);
+                }
+            }
+        }
+
+        // first/last valid instructions
+        final AbstractInsnNode[] first = new AbstractInsnNode[basicBlocks.length];
+        final AbstractInsnNode[] last = new AbstractInsnNode[basicBlocks.length];
+        for (int b = 0; b < basicBlocks.length; b++) {
+            for (final int insnIndex : basicBlocks[b]) {
+                final AbstractInsnNode insn = methodNode.instructions.get(insnIndex);
+
+                // skip
+                switch (insn.getType()) {
+                    case AbstractInsnNode.LABEL:
+                    case AbstractInsnNode.FRAME:
+                    case AbstractInsnNode.LINE:
+                        continue;
+                }
+
+                if (first[b] == null) {
+                    first[b] = insn;
+                }
+                last[b] = insn;
+            }
+        }
+
+        AbstractInsnNode insn = methodNode.instructions.getFirst();
+
+        final int edgePairWindows = (edgePairs.size() + 63) / 64;
+        final int[] edgePairIndexes = new int[edgePairWindows];
+        for (int w = 0; w < edgePairWindows; w++) {
+            edgePairIndexes[w] = nodeIdGen.nextId();
+            LabelFrameNode.insertBefore(insn, methodNode.instructions, init(edgePairs.size(), methodNode, w));
+        }
+
+        // insere pontas de prova comuns
+        for (int b = 0; b < basicBlocks.length; b++) {
+
+            final long[] lParDeArestasAtualAtivo;
+            if (parDeArestasAtualAtivo[b] == null) {
+                lParDeArestasAtualAtivo = null;
+            } else {
+                lParDeArestasAtualAtivo = BitSetUtils.toLongArray(parDeArestasAtualAtivo[b], edgePairWindows);
+            }
+
+            for (int w = 0; w < edgePairWindows; w++) {
+                final int nPredecessors = predecessors[basicBlocks[b][0]].length;
+                final Probe p = probe(edgePairs.size(), methodNode, w, nPredecessors == 0);
+
+                if (lParDeArestasAtualAtivo != null) {
+                    p.currentActiveElement = lParDeArestasAtualAtivo[w];
+                } else {
+                    p.currentActiveElement = 0L;
+                }
+
+                LabelFrameNode.insertBefore(first[b], methodNode.instructions, p);
+            }
+        }
+
+        while (insn != null) {
+            if (insn instanceof FrameNode) {
+                final FrameNode frame = (FrameNode) insn;
+                frame.local = new ArrayList<Object>(frame.local);
+                int size = 0;
+                for (final Object obj : frame.local) {
+                    size++;
+                    if (obj.equals(Opcodes.DOUBLE) || obj.equals(Opcodes.LONG)) {
+                        size++;
+                    }
+                }
+                while (size < methodNode.maxLocals) {
+                    frame.local.add(Opcodes.TOP);
+                    size++;
+                }
+
+                final Integer controlFlowType = typeOfVars(edgePairs.size());
+                for (int i = 0; i < edgePairWindows; i++) {
+                    frame.local.add(controlFlowType);
+                    frame.local.add(controlFlowType);
+                    frame.local.add(controlFlowType);
+                }
+            } else if (isReturn(insn.getOpcode())) {
+                // insere ponta de prova final
+                for (int w = 0; w < edgePairWindows; w++) {
+                    final Probe p = update(edgePairs.size(), methodNode, w, edgePairIndexes[w]);
+                    LabelFrameNode.insertBefore(insn, methodNode.instructions, p);
+                }
+            }
+            insn = insn.getNext();
+        }
+
+        methodNode.maxLocals = methodNode.maxLocals + edgePairWindows * numOfBlocks(basicBlocks.length);
+        methodNode.maxStack = methodNode.maxStack + 6;
+
+    }
+
     private Probe init(final int size, final MethodNode methodNode, final int window) {
         if (size <= 32) {
-            return new IntegerInitProbe(methodNode, edgeCoverage);
+            return new IntegerInitProbe(methodNode, edgeCoverage, edgePairCoverage);
         } else {
-            return new LongInitProbe(methodNode, window, edgeCoverage);
+            return new LongInitProbe(methodNode, window, edgeCoverage, edgePairCoverage);
         }
     }
 
     private Probe probe(final int size, final MethodNode methodNode, final int window, final boolean root) {
         if (size <= 32) {
             if (root) {
-                return new IntegerRootProbe(methodNode, edgeCoverage);
+                return new IntegerRootProbe(methodNode, edgeCoverage, edgePairCoverage);
             } else {
-                return new IntegerProbe(methodNode, edgeCoverage);
+                return new IntegerProbe(methodNode, edgeCoverage, edgePairCoverage);
             }
         } else {
             if (root) {
-                return new LongRootProbe(methodNode, window, edgeCoverage);
+                return new LongRootProbe(methodNode, window, edgeCoverage, edgePairCoverage);
             } else {
-                return new LongProbe(methodNode, window, edgeCoverage);
+                return new LongProbe(methodNode, window, edgeCoverage, edgePairCoverage);
             }
         }
     }
 
     private Probe update(final int size, final MethodNode methodNode, final int window, final int index) {
         if (size <= 32) {
-            return new IntegerUpdateProbe(methodNode, className, index, edgeCoverage);
+            return new IntegerUpdateProbe(methodNode, className, index, edgeCoverage, edgePairCoverage);
         } else {
-            return new LongUpdateProbe(methodNode, window, className, index, edgeCoverage);
+            return new LongUpdateProbe(methodNode, window, className, index, edgeCoverage, edgePairCoverage);
         }
     }
 
@@ -298,7 +411,9 @@ public class CoverageMethodTransformer extends MethodTransformer {
 
     private int numOfBlocks(int size) {
         int numVarProbe = 1;
-        if (edgeCoverage) {
+        if (edgePairCoverage) {
+            numVarProbe += 2;
+        } else if (edgeCoverage) {
             numVarProbe++;
         }
         if (size <= 32) {
@@ -319,4 +434,3 @@ public class CoverageMethodTransformer extends MethodTransformer {
     }
 
 }
-

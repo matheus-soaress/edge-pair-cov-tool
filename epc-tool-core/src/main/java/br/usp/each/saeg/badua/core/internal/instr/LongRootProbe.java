@@ -16,8 +16,8 @@ import org.objectweb.asm.tree.MethodNode;
 
 public final class LongRootProbe extends Probe {
 
-    public LongRootProbe(final MethodNode methodNode, final int window, final boolean edgeCoverage) {
-        super(methodNode, window, edgeCoverage);
+    public LongRootProbe(final MethodNode methodNode, final int window, final boolean edgeCoverage, final boolean edgePairCoverage) {
+        super(methodNode, window, edgeCoverage, edgePairCoverage);
     }
 
     @Override
@@ -28,19 +28,19 @@ public final class LongRootProbe extends Probe {
     @Override
     public void accept(final MethodVisitor mv) {
         if(edgeCoverage) {
-            mv.visitLdcInsn(currentCoveredElem);
-            mv.visitVarInsn(Opcodes.LLOAD, vPotCoveredElement);
+            mv.visitLdcInsn(currentActiveElement);
+            mv.visitVarInsn(Opcodes.LLOAD, vParentActiveElement);
             mv.visitInsn(Opcodes.LAND);
             mv.visitVarInsn(Opcodes.LLOAD, vCoveredElement);
             mv.visitInsn(Opcodes.LOR);
             mv.visitVarInsn(Opcodes.LSTORE, vCoveredElement);
 
 
-            mv.visitLdcInsn(currentCoveredElem);
-            mv.visitVarInsn(Opcodes.LSTORE, vPotCoveredElement);
+            mv.visitLdcInsn(currentActiveElement);
+            mv.visitVarInsn(Opcodes.LSTORE, vParentActiveElement);
         } else {
             // atualiza nos cobertos
-            mv.visitLdcInsn(currentCoveredElem);
+            mv.visitLdcInsn(currentActiveElement);
             mv.visitVarInsn(Opcodes.LLOAD, vCoveredElement);
             mv.visitInsn(Opcodes.LOR);
             mv.visitVarInsn(Opcodes.LSTORE, vCoveredElement);

@@ -2,7 +2,7 @@ package br.usp.each.saeg.badua.core.util;
 
 import java.util.ArrayList;
 
-public class Edge {
+public class Edge implements Comparable {
 
     public int initialNode;
     public int finalNode;
@@ -43,4 +43,35 @@ public class Edge {
         return edges;
     }
 
+    public static ArrayList<Edge[]> getEdgePairs(final ArrayList<Edge> edges) {
+
+        ArrayList<Edge[]> edgePairs = new ArrayList<Edge[]>();
+
+
+        for (Edge edge : edges) {
+            for (Edge otherEdge : edges) {
+                if (edge.finalNode == otherEdge.initialNode) {
+                    edgePairs.add(new Edge[] {edge, otherEdge});
+                }
+            }
+        }
+
+        return edgePairs;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Edge other = (Edge) o;
+        if (this.initialNode > other.initialNode) {
+            return 1;
+        } else if (this.initialNode < other.initialNode) {
+            return -1;
+        } else if (this.finalNode > other.finalNode) {
+            return 1;
+        } else if (this.finalNode < other.finalNode) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
 }

@@ -38,39 +38,55 @@ public abstract class Probe extends AbstractInsnNode {
 
     public final int vCoveredElement;
 
-    public final int vPotCoveredElement;
+    public final int vParentActiveElement;
+
+    public final int vGrandparentActiveElement;
 
     public final boolean edgeCoverage;
 
-    protected long currentCoveredElem;
+    public final boolean edgePairCoverage;
+
+    protected long currentActiveElement;
 
     // Used by integer probes
-    protected Probe(final MethodNode methodNode, final boolean edgeCoverage) {
+    protected Probe(final MethodNode methodNode, final boolean edgeCoverage, final boolean edgePairCoverage) {
         super(-1);
 
         vCoveredElement = methodNode.maxLocals;
-        if (edgeCoverage) {
-            vPotCoveredElement = methodNode.maxLocals + 1;
+        if (edgePairCoverage) {
+            vParentActiveElement = methodNode.maxLocals + 1;
+            vGrandparentActiveElement = methodNode.maxLocals + 2;
+        } else if (edgeCoverage) {
+            vParentActiveElement = methodNode.maxLocals + 1;
+            vGrandparentActiveElement = 0;
         } else {
-            vPotCoveredElement = 0;
+            vParentActiveElement = 0;
+            vGrandparentActiveElement = 0;
         }
         this.edgeCoverage = edgeCoverage;
-
+        this.edgePairCoverage = edgePairCoverage;
     }
 
     // used by long probes
-    protected Probe(final MethodNode methodNode, final int window, final boolean edgeCoverage) {
+    protected Probe(final MethodNode methodNode, final int window, final boolean edgeCoverage,
+                    final boolean edgePairCoverage) {
         super(-1);
 
-        if (edgeCoverage) {
+        if (edgePairCoverage) {
+            vCoveredElement = methodNode.maxLocals + 6 * window;
+            vParentActiveElement = methodNode.maxLocals + 6 * window + 2;
+            vGrandparentActiveElement = methodNode.maxLocals + 6 * window + 4;
+        } else if (edgeCoverage) {
             vCoveredElement = methodNode.maxLocals + 4 * window;
-            vPotCoveredElement = methodNode.maxLocals + 4 * window + 2;
+            vParentActiveElement = methodNode.maxLocals + 4 * window + 2;
+            vGrandparentActiveElement = 0;
         } else {
             vCoveredElement = methodNode.maxLocals + 2 * window;
-            vPotCoveredElement = 0;
+            vParentActiveElement = 0;
+            vGrandparentActiveElement = 0;
         }
         this.edgeCoverage = edgeCoverage;
-
+        this.edgePairCoverage = edgePairCoverage;
     }
 
     @Override
