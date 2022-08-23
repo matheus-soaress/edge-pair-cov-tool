@@ -27,7 +27,11 @@ public final class LongInitProbe extends Probe {
 
     @Override
     public void accept(final MethodVisitor mv) {
-        if (edgeCoverage) {
+        if (edgePairCoverage) {
+            mv.visitInsn(Opcodes.LCONST_0);
+            mv.visitVarInsn(Opcodes.LSTORE, vGrandparentActiveElement);
+        }
+        if (edgeCoverage || edgePairCoverage) {
             mv.visitInsn(Opcodes.LCONST_0);
             mv.visitVarInsn(Opcodes.LSTORE, vParentActiveElement);
         }

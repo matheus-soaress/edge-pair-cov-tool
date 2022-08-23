@@ -28,7 +28,22 @@ public final class LongProbe extends Probe {
     @Override
     public void accept(final MethodVisitor mv) {
 
-        if(edgeCoverage) {
+        if(edgePairCoverage) {
+            mv.visitLdcInsn(currentActiveElement);
+            mv.visitVarInsn(Opcodes.LLOAD, vParentActiveElement);
+            mv.visitInsn(Opcodes.LAND);
+            mv.visitVarInsn(Opcodes.LLOAD, vGrandparentActiveElement);
+            mv.visitInsn(Opcodes.LAND);
+            mv.visitVarInsn(Opcodes.LLOAD, vCoveredElement);
+            mv.visitInsn(Opcodes.LOR);
+            mv.visitVarInsn(Opcodes.LSTORE, vCoveredElement);
+
+            mv.visitVarInsn(Opcodes.LLOAD, vParentActiveElement);
+            mv.visitVarInsn(Opcodes.LSTORE, vGrandparentActiveElement);
+
+            mv.visitLdcInsn(currentActiveElement);
+            mv.visitVarInsn(Opcodes.LSTORE, vParentActiveElement);
+        } else if(edgeCoverage) {
             mv.visitLdcInsn(currentActiveElement);
             mv.visitVarInsn(Opcodes.LLOAD, vParentActiveElement);
             mv.visitInsn(Opcodes.LAND);

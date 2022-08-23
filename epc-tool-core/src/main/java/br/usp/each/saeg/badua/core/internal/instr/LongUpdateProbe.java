@@ -35,18 +35,6 @@ public final class LongUpdateProbe extends Probe {
 
     @Override
     public void accept(final MethodVisitor mv) {
-        /*
-        mv.visitVarInsn(Opcodes.LLOAD, vCovered);
-        mv.visitMethodInsn(Opcodes.INVOKESTATIC, owner,
-                InstrSupport.DATAMETHOD_NAME,
-                InstrSupport.DATAMETHOD_DESC, false);
-        InstrSupport.push(mv, index);
-        mv.visitInsn(Opcodes.DUP2_X2);
-        mv.visitInsn(Opcodes.LALOAD);
-        mv.visitInsn(Opcodes.LOR);
-        mv.visitInsn(Opcodes.LASTORE);
-
-         */
 
         /* begin matheus */
         mv.visitVarInsn(Opcodes.LLOAD, vCoveredElement);
