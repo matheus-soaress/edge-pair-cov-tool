@@ -45,7 +45,6 @@ public final class Agent {
         try {
             output.writeExecutionData(data, false);
         } catch (final IOException e) {
-            System.err.println("error writing execution data");
             e.printStackTrace();
         }
     }

@@ -14,6 +14,7 @@ import br.usp.each.saeg.asm.defuse.*;
 import br.usp.each.saeg.badua.core.data.ExecutionData;
 import br.usp.each.saeg.badua.core.internal.instr.InstrSupport;
 import br.usp.each.saeg.badua.core.util.Edge;
+import br.usp.each.saeg.badua.core.util.GraphwizGenerator;
 import org.jacoco.core.internal.analysis.StringPool;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
@@ -21,10 +22,13 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.LineNumberNode;
-import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 import static br.usp.each.saeg.commons.BitSetUtils.valueOf;
@@ -45,12 +49,16 @@ public class ClassAnalyzer extends ClassVisitor {
 
     private boolean edgePairCoverage;
 
-    public ClassAnalyzer(final ExecutionData execData, final StringPool stringPool, final boolean edgeCoverage, final boolean edgePairCoverage) {
+    private File graphwizFile;
+
+    public ClassAnalyzer(final ExecutionData execData, final StringPool stringPool, final boolean edgeCoverage,
+                         final boolean edgePairCoverage, File graphwizFile) {
         super(Opcodes.ASM9);
         this.execData = execData;
         this.stringPool = stringPool;
         this.edgeCoverage = edgeCoverage;
         this.edgePairCoverage = edgePairCoverage;
+        this.graphwizFile = graphwizFile;
     }
 
     @Override
@@ -135,6 +143,23 @@ public class ClassAnalyzer extends ClassVisitor {
                     nodeData = getData(execData.getData(), flowAnalyzer.getBasicBlocks().length);
                     nodeReport(lines, flowAnalyzer, nodeData, methodCoverage);
                 }
+
+                if (graphwizFile != null) {
+                    FileOutputStream output = null;
+                    try {
+                        output = new FileOutputStream(graphwizFile);
+                        //GraphwizGenerator.write(flowAnalyzer, output, methodCoverage, lines, edgeCoverage, edgePairCoverage);
+                    } catch (FileNotFoundException e) {
+                        System.err.println("Failed: " + e.getLocalizedMessage());
+                    } finally {
+                        try {
+                            output.close();
+                        } catch (IOException e) {
+                            System.err.println("Failed: " + e.getLocalizedMessage());
+                        }
+                    }
+                }
+
             }
 
             public BitSet getData(final long[] raw, final int length) {

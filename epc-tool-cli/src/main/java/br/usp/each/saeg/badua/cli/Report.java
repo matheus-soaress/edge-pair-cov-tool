@@ -100,6 +100,8 @@ public class Report {
 
     private final File xmlFile;
 
+    private final File graphwizFile;
+
     private final CoverageVisitor visitor;
 
     private final Analyzer analyzer;
@@ -111,6 +113,7 @@ public class Report {
     public Report(final ReportOptions options) throws IOException {
         classes = options.getClasses();
         xmlFile = options.getXMLFile();
+        graphwizFile = options.getGraphwizFile();
         edges = options.edges();
         edgePairs = options.edgePairs();
 
@@ -134,7 +137,7 @@ public class Report {
         for (final File file : files) {
             final InputStream input = new FileInputStream(file);
             try {
-                analyzer.analyzeAll(input, file.getPath(), edges, edgePairs);
+                analyzer.analyzeAll(input, file.getPath(), edges, edgePairs, graphwizFile);
             } finally {
                 input.close();
             }
@@ -148,6 +151,8 @@ public class Report {
                 output.close();
             }
         }
+
+
     }
 
     private static ExecutionDataStore readExecutionData(final File inputFile) throws IOException {
@@ -164,6 +169,7 @@ public class Report {
     }
 
     public static void main(final String[] args) {
+        System.out.println("main Report");
         final ReportOptions options = new ReportOptions();
         final CmdLineParser parser = new CmdLineParser(options);
 

@@ -10,6 +10,7 @@
  */
 package br.usp.each.saeg.badua.core.analysis;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -46,10 +47,12 @@ public class Analyzer {
         return new ExecutionData(classId, className, null);
     }
 
-    public void analyze(final byte[] buffer, final boolean edges, final boolean edgePairs) {
+    public void analyze(final byte[] buffer, final boolean edges, final boolean edgePairs,
+                        final File graphwizFile) {
         final long classId = CRC64.checksum(buffer);
         final ClassReader reader = new ClassReader(buffer);
-        final ClassAnalyzer ca = new ClassAnalyzer(getData(classId, reader.getClassName()), stringPool, edges, edgePairs);
+        final ClassAnalyzer ca = new ClassAnalyzer(getData(classId, reader.getClassName()), stringPool, edges,
+                edgePairs, graphwizFile);
         reader.accept(ca, DEFAULT);
         final ClassCoverage coverage = ca.getCoverage();
         if (coverage.getCounter().getTotalCount() > 0) {
@@ -57,9 +60,10 @@ public class Analyzer {
         }
     }
 
-    public void analyze(final InputStream input, final String location, final boolean edges, final boolean edgePairs) throws IOException {
+    public void analyze(final InputStream input, final String location, final boolean edges,
+                        final boolean edgePairs, final File graphwizFile) throws IOException {
         try {
-            analyze(Files.toByteArray(input), edges, edgePairs);
+            analyze(Files.toByteArray(input), edges, edgePairs, graphwizFile);
         } catch (final RuntimeException e) {
             throw analyzeError(location, e);
         }
@@ -72,11 +76,12 @@ public class Analyzer {
         return ex;
     }
 
-    public int analyzeAll(final InputStream input, final String location, final boolean edges, final boolean edgePairs) throws IOException {
+    public int analyzeAll(final InputStream input, final String location, final boolean edges,
+                          final boolean edgePairs, final File graphwizFile) throws IOException {
         final ContentTypeDetector detector = new ContentTypeDetector(input);
         switch (detector.getType()) {
         case ContentTypeDetector.CLASSFILE:
-            analyze(detector.getInputStream(), location, edges, edgePairs);
+            analyze(detector.getInputStream(), location, edges, edgePairs, graphwizFile);
             return 1;
         default:
             return 0;

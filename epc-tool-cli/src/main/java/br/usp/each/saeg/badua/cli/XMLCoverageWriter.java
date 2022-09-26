@@ -10,7 +10,6 @@
  */
 package br.usp.each.saeg.badua.cli;
 
-import static br.usp.each.saeg.badua.core.analysis.SourceLineDefUseChain.NONE;
 import static org.jacoco.report.internal.xml.XMLCoverageWriter.createChild;
 
 import java.io.FileOutputStream;
@@ -88,17 +87,6 @@ public class XMLCoverageWriter {
         element.attr("end-2", edgePair[1].firstLineFinalNode);
     }
 
-    private static void writeDU(final SourceLineDefUseChain du, final XMLElement parent) throws IOException {
-        final XMLElement element = parent.element("du");
-        element.attr("var", du.var);
-        element.attr("def", du.def);
-        element.attr("use", du.use);
-        if (du.target != NONE) {
-            element.attr("target", du.target);
-        }
-        element.attr("covered", du.covered ? 1 : 0);
-    }
-
     private static void writeCounters(final CoverageNode node, final XMLElement parent,
                                       final boolean edges, final boolean edgePairs) throws IOException {
         if (edgePairs) {
@@ -106,10 +94,21 @@ public class XMLCoverageWriter {
         } else if (edges) {
             writeCounter(node.getCounter(), "EDGE", parent);
         } else {
+            writeCounter(node.getLineCounter(), "LINE", parent);
             writeCounter(node.getCounter(), "NODE", parent);
         }
         writeCounter(node.getMethodCounter(), "METHOD", parent);
         writeCounter(node.getClassCounter(), "CLASS", parent);
+    }
+
+    private static void writeLineCounter(ClassCoverage node, final String type, XMLElement parent) throws IOException {
+        int lineCounter = 0;
+        for (MethodCoverage m: node.getMethods()) {
+            final XMLElement element = parent.element("counter");
+            element.attr("type", type);
+            element.attr("missed", m.getLineCounter().getMissedCount());
+            element.attr("covered", m.getLineCounter().getCoveredCount());
+        }
     }
 
     private static void writeCounter(final ICounter counter, final String type, final XMLElement parent)

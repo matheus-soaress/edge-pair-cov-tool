@@ -17,6 +17,7 @@ import java.util.*;
 
 import br.usp.each.saeg.badua.core.util.Edge;
 import org.jacoco.core.analysis.ICounter;
+import org.jacoco.core.internal.analysis.CounterImpl;
 
 public class MethodCoverage extends CoverageNode {
 
@@ -80,6 +81,10 @@ public class MethodCoverage extends CoverageNode {
         return edgePairs;
     }
 
+    public CounterImpl getLineCounter() {
+        return lineCounter;
+    }
+
     public void increment(final ICounter counter) {
         this.counter = this.counter.increment(counter);
         if (this.counter.getCoveredCount() > 0) {
@@ -89,7 +94,9 @@ public class MethodCoverage extends CoverageNode {
 
     public void increment(final boolean covered, Collection<Integer> lines) {
         for (Integer line: lines) {
-            this.lines.add(new SourceCodeLine(line, covered));
+            if(this.lines.add(new SourceCodeLine(line, covered))) {
+                this.lineCounter = this.lineCounter.increment(covered ? COUNTER_0_1 : COUNTER_1_0);
+            }
         }
         increment(covered ? COUNTER_0_1 : COUNTER_1_0);
     }

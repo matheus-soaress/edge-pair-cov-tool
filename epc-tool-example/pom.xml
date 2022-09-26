@@ -27,6 +27,7 @@
 		<maven.compiler.target>${java.specification.version}</maven.compiler.target>
 		<argLine>-javaagent:target/dependency/epc-tool-agent-rt-${project.version}-all.jar -Doutput.file=target/epc-tool.ser</argLine>
 		<maven.deploy.skip>true</maven.deploy.skip>
+		<maven.test.skip>true</maven.test.skip>
 	</properties>
 
 	<build>

@@ -52,7 +52,6 @@ public final class IntegerProbe extends Probe {
             mv.visitInsn(Opcodes.IOR);
             mv.visitVarInsn(Opcodes.ISTORE, vCoveredElement);
 
-
             InstrSupport.push(mv, (int) currentActiveElement);
             mv.visitVarInsn(Opcodes.ISTORE, vParentActiveElement);
         } else {

@@ -53,17 +53,16 @@ public class CoverageMethodTransformer extends MethodTransformer {
         }
 
         if (edgePairCoverage) {
-            System.out.println("Edge-pair argument OK");
-            edgePairInstrument(flowAnalyzer.getSuccessors(), flowAnalyzer.getPredecessors(), flowAnalyzer.getBasicBlocks(), flowAnalyzer.getLeaders(), methodNode);
+            edgePairInstrument(flowAnalyzer.getSuccessors(), flowAnalyzer.getBasicBlocks(), flowAnalyzer.getLeaders(), methodNode);
         } else if (edgeCoverage) {
-            edgeInstrument(flowAnalyzer.getSuccessors(), flowAnalyzer.getPredecessors(), flowAnalyzer.getBasicBlocks(), flowAnalyzer.getLeaders(), methodNode);
+            edgeInstrument(flowAnalyzer.getSuccessors(), flowAnalyzer.getBasicBlocks(), flowAnalyzer.getLeaders(), methodNode);
         } else {
-            nodeInstrument(flowAnalyzer.getSuccessors(), flowAnalyzer.getPredecessors(), flowAnalyzer.getBasicBlocks(), flowAnalyzer.getLeaders(), methodNode);
+            nodeInstrument(flowAnalyzer.getBasicBlocks(), methodNode);
         }
 
     }
 
-    private void nodeInstrument(int[][] successors, int[][] predecessors, int[][] basicBlocks, int[] leaders, MethodNode methodNode) {
+    private void nodeInstrument(int[][] basicBlocks, MethodNode methodNode) {
         // inicia um conjunto do bloco que sera usado para "setar" o bit do no coberto
         final BitSet[] noAtualCoberto = new BitSet[basicBlocks.length];
         for (int b = 0; b < basicBlocks.length; b++) {
@@ -72,26 +71,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
         }
 
         // first/last valid instructions
-        final AbstractInsnNode[] first = new AbstractInsnNode[basicBlocks.length];
-        final AbstractInsnNode[] last = new AbstractInsnNode[basicBlocks.length];
-        for (int b = 0; b < basicBlocks.length; b++) {
-            for (final int insnIndex : basicBlocks[b]) {
-                final AbstractInsnNode insn = methodNode.instructions.get(insnIndex);
-
-                // skip
-                switch (insn.getType()) {
-                    case AbstractInsnNode.LABEL:
-                    case AbstractInsnNode.FRAME:
-                    case AbstractInsnNode.LINE:
-                        continue;
-                }
-
-                if (first[b] == null) {
-                    first[b] = insn;
-                }
-                last[b] = insn;
-            }
-        }
+        final AbstractInsnNode[] first = getFirst(basicBlocks, methodNode);
 
         AbstractInsnNode insn = methodNode.instructions.getFirst();
 
@@ -108,8 +88,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
             final long[] lNoAtualCoberto = BitSetUtils.toLongArray(noAtualCoberto[b], nodeWindows);
 
             for (int w = 0; w < nodeWindows; w++) {
-                final int nPredecessors = predecessors[basicBlocks[b][0]].length;
-                final Probe p = probe(basicBlocks.length, methodNode, w, nPredecessors == 0);
+                final Probe p = probe(basicBlocks.length, methodNode, w);
 
                 p.currentActiveElement = lNoAtualCoberto[w];
 
@@ -119,19 +98,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
 
         while (insn != null) {
             if (insn instanceof FrameNode) {
-                final FrameNode frame = (FrameNode) insn;
-                frame.local = new ArrayList<Object>(frame.local);
-                int size = 0;
-                for (final Object obj : frame.local) {
-                    size++;
-                    if (obj.equals(Opcodes.DOUBLE) || obj.equals(Opcodes.LONG)) {
-                        size++;
-                    }
-                }
-                while (size < methodNode.maxLocals) {
-                    frame.local.add(Opcodes.TOP);
-                    size++;
-                }
+                final FrameNode frame = getFrame(methodNode, (FrameNode) insn);
 
                 final Integer controlFlowType = typeOfVars(basicBlocks.length);
                 for (int i = 0; i < nodeWindows; i++) {
@@ -152,7 +119,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
 
     }
 
-    private void edgeInstrument(int[][] successors, int[][] predecessors, int[][] basicBlocks, int[] leaders, MethodNode methodNode) {
+    private void edgeInstrument(int[][] successors, int[][] basicBlocks, int[] leaders, MethodNode methodNode) {
         final ArrayList<Edge> edges = Edge.getEdges(successors, leaders);
         final BitSet[] arestaAtualAtiva = new BitSet[basicBlocks.length];
 
@@ -165,28 +132,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
                 }
             }
         }
-
-        // first/last valid instructions
-        final AbstractInsnNode[] first = new AbstractInsnNode[basicBlocks.length];
-        final AbstractInsnNode[] last = new AbstractInsnNode[basicBlocks.length];
-        for (int b = 0; b < basicBlocks.length; b++) {
-            for (final int insnIndex : basicBlocks[b]) {
-                final AbstractInsnNode insn = methodNode.instructions.get(insnIndex);
-
-                // skip
-                switch (insn.getType()) {
-                    case AbstractInsnNode.LABEL:
-                    case AbstractInsnNode.FRAME:
-                    case AbstractInsnNode.LINE:
-                        continue;
-                }
-
-                if (first[b] == null) {
-                    first[b] = insn;
-                }
-                last[b] = insn;
-            }
-        }
+        final AbstractInsnNode[] first = getFirst(basicBlocks, methodNode);
 
         AbstractInsnNode insn = methodNode.instructions.getFirst();
 
@@ -208,8 +154,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
             }
 
             for (int w = 0; w < edgeWindows; w++) {
-                final int nPredecessors = predecessors[basicBlocks[b][0]].length;
-                final Probe p = probe(edges.size(), methodNode, w, nPredecessors == 0);
+                final Probe p = probe(edges.size(), methodNode, w);
 
                 if (lArestaAtualAtiva != null) {
                     p.currentActiveElement = lArestaAtualAtiva[w];
@@ -223,19 +168,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
 
         while (insn != null) {
             if (insn instanceof FrameNode) {
-                final FrameNode frame = (FrameNode) insn;
-                frame.local = new ArrayList<Object>(frame.local);
-                int size = 0;
-                for (final Object obj : frame.local) {
-                    size++;
-                    if (obj.equals(Opcodes.DOUBLE) || obj.equals(Opcodes.LONG)) {
-                        size++;
-                    }
-                }
-                while (size < methodNode.maxLocals) {
-                    frame.local.add(Opcodes.TOP);
-                    size++;
-                }
+                final FrameNode frame = getFrame(methodNode, (FrameNode) insn);
 
                 // begin matheus
                 final Integer controlFlowType = typeOfVars(edges.size());
@@ -261,7 +194,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
 
     }
 
-    private void edgePairInstrument(int[][] successors, int[][] predecessors, int[][] basicBlocks, int[] leaders, MethodNode methodNode) {
+    private void edgePairInstrument(int[][] successors, int[][] basicBlocks, int[] leaders, MethodNode methodNode) {
 
         final ArrayList<Edge> edges = Edge.getEdges(successors, leaders);
         final ArrayList<Edge[]> edgePairs = Edge.getEdgePairs(edges);
@@ -279,26 +212,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
         }
 
         // first/last valid instructions
-        final AbstractInsnNode[] first = new AbstractInsnNode[basicBlocks.length];
-        final AbstractInsnNode[] last = new AbstractInsnNode[basicBlocks.length];
-        for (int b = 0; b < basicBlocks.length; b++) {
-            for (final int insnIndex : basicBlocks[b]) {
-                final AbstractInsnNode insn = methodNode.instructions.get(insnIndex);
-
-                // skip
-                switch (insn.getType()) {
-                    case AbstractInsnNode.LABEL:
-                    case AbstractInsnNode.FRAME:
-                    case AbstractInsnNode.LINE:
-                        continue;
-                }
-
-                if (first[b] == null) {
-                    first[b] = insn;
-                }
-                last[b] = insn;
-            }
-        }
+        final AbstractInsnNode[] first = getFirst(basicBlocks, methodNode);
 
         AbstractInsnNode insn = methodNode.instructions.getFirst();
 
@@ -320,8 +234,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
             }
 
             for (int w = 0; w < edgePairWindows; w++) {
-                final int nPredecessors = predecessors[basicBlocks[b][0]].length;
-                final Probe p = probe(edgePairs.size(), methodNode, w, nPredecessors == 0);
+                final Probe p = probe(edgePairs.size(), methodNode, w);
 
                 if (lParDeArestasAtualAtivo != null) {
                     p.currentActiveElement = lParDeArestasAtualAtivo[w];
@@ -335,19 +248,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
 
         while (insn != null) {
             if (insn instanceof FrameNode) {
-                final FrameNode frame = (FrameNode) insn;
-                frame.local = new ArrayList<Object>(frame.local);
-                int size = 0;
-                for (final Object obj : frame.local) {
-                    size++;
-                    if (obj.equals(Opcodes.DOUBLE) || obj.equals(Opcodes.LONG)) {
-                        size++;
-                    }
-                }
-                while (size < methodNode.maxLocals) {
-                    frame.local.add(Opcodes.TOP);
-                    size++;
-                }
+                final FrameNode frame = getFrame(methodNode, (FrameNode) insn);
 
                 final Integer controlFlowType = typeOfVars(edgePairs.size());
                 for (int i = 0; i < edgePairWindows; i++) {
@@ -378,19 +279,11 @@ public class CoverageMethodTransformer extends MethodTransformer {
         }
     }
 
-    private Probe probe(final int size, final MethodNode methodNode, final int window, final boolean root) {
+    private Probe probe(final int size, final MethodNode methodNode, final int window) {
         if (size <= 32) {
-            if (root) {
-                return new IntegerRootProbe(methodNode, edgeCoverage, edgePairCoverage);
-            } else {
-                return new IntegerProbe(methodNode, edgeCoverage, edgePairCoverage);
-            }
+            return new IntegerProbe(methodNode, edgeCoverage, edgePairCoverage);
         } else {
-            if (root) {
-                return new LongRootProbe(methodNode, window, edgeCoverage, edgePairCoverage);
-            } else {
-                return new LongProbe(methodNode, window, edgeCoverage, edgePairCoverage);
-            }
+            return new LongProbe(methodNode, window, edgeCoverage, edgePairCoverage);
         }
     }
 
@@ -431,6 +324,48 @@ public class CoverageMethodTransformer extends MethodTransformer {
         } else {
             return Opcodes.LONG;
         }
+    }
+
+    private AbstractInsnNode[] getFirst(int[][] basicBlocks, MethodNode methodNode) {
+        // first/last valid instructions
+        final AbstractInsnNode[] first = new AbstractInsnNode[basicBlocks.length];
+        final AbstractInsnNode[] last = new AbstractInsnNode[basicBlocks.length];
+        for (int b = 0; b < basicBlocks.length; b++) {
+            for (final int insnIndex : basicBlocks[b]) {
+                final AbstractInsnNode insn = methodNode.instructions.get(insnIndex);
+
+                // skip
+                switch (insn.getType()) {
+                    case AbstractInsnNode.LABEL:
+                    case AbstractInsnNode.FRAME:
+                    case AbstractInsnNode.LINE:
+                        continue;
+                }
+
+                if (first[b] == null) {
+                    first[b] = insn;
+                }
+                last[b] = insn;
+            }
+        }
+        return first;
+    }
+
+    private FrameNode getFrame(MethodNode methodNode, FrameNode insn) {
+        final FrameNode frame = insn;
+        frame.local = new ArrayList<Object>(frame.local);
+        int size = 0;
+        for (final Object obj : frame.local) {
+            size++;
+            if (obj.equals(Opcodes.DOUBLE) || obj.equals(Opcodes.LONG)) {
+                size++;
+            }
+        }
+        while (size < methodNode.maxLocals) {
+            frame.local.add(Opcodes.TOP);
+            size++;
+        }
+        return frame;
     }
 
 }

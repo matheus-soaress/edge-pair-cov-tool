@@ -25,11 +25,14 @@ public class CoverageNode {
 
     protected CounterImpl classCounter;
 
+    protected CounterImpl lineCounter;
+
     public CoverageNode(final String name) {
         this.name = name;
         this.counter = COUNTER_0_0;
         this.methodCounter = COUNTER_0_0;
         this.classCounter = COUNTER_0_0;
+        this.lineCounter = COUNTER_0_0;
     }
 
     public String getName() {
@@ -48,10 +51,15 @@ public class CoverageNode {
         return classCounter;
     }
 
+    public CounterImpl getLineCounter() {
+        return lineCounter;
+    }
+
     public void increment(final CoverageNode child) {
         counter = counter.increment(child.getCounter());
         methodCounter = methodCounter.increment(child.getMethodCounter());
         classCounter = classCounter.increment(child.getClassCounter());
+        lineCounter = lineCounter.increment(child.getLineCounter());
     }
 
 }
