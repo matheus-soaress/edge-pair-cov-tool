@@ -10,14 +10,16 @@
  */
 package br.usp.each.saeg.badua.core.analysis;
 
-import static org.jacoco.core.internal.analysis.CounterImpl.COUNTER_0_0;
-
 import org.jacoco.core.analysis.ICounter;
 import org.jacoco.core.internal.analysis.CounterImpl;
+
+import static org.jacoco.core.internal.analysis.CounterImpl.COUNTER_0_0;
 
 public class CoverageNode {
 
     private final String name;
+
+    public String sourceFile;
 
     protected CounterImpl counter;
 

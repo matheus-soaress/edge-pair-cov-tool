@@ -14,7 +14,6 @@ import br.usp.each.saeg.asm.defuse.*;
 import br.usp.each.saeg.badua.core.data.ExecutionData;
 import br.usp.each.saeg.badua.core.internal.instr.InstrSupport;
 import br.usp.each.saeg.badua.core.util.Edge;
-import br.usp.each.saeg.badua.core.util.GraphwizGenerator;
 import org.jacoco.core.internal.analysis.StringPool;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
@@ -52,13 +51,14 @@ public class ClassAnalyzer extends ClassVisitor {
     private File graphwizFile;
 
     public ClassAnalyzer(final ExecutionData execData, final StringPool stringPool, final boolean edgeCoverage,
-                         final boolean edgePairCoverage, File graphwizFile) {
+                         final boolean edgePairCoverage, final File graphwizFile, final ClassVisitor cv) {
         super(Opcodes.ASM9);
         this.execData = execData;
         this.stringPool = stringPool;
         this.edgeCoverage = edgeCoverage;
         this.edgePairCoverage = edgePairCoverage;
         this.graphwizFile = graphwizFile;
+        super.cv = cv;
     }
 
     @Override
@@ -96,6 +96,8 @@ public class ClassAnalyzer extends ClassVisitor {
                                      final String[] exceptions) {
 
         InstrSupport.assertNotInstrumented(name, coverage.getName());
+
+
 
         // Does not analyze:
         // 1. Interfaces

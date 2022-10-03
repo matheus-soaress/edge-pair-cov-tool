@@ -10,12 +10,12 @@
  */
 package br.usp.each.saeg.badua.core.analysis;
 
-import static org.jacoco.core.internal.analysis.CounterImpl.COUNTER_0_1;
-import static org.jacoco.core.internal.analysis.CounterImpl.COUNTER_1_0;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+
+import static org.jacoco.core.internal.analysis.CounterImpl.COUNTER_0_1;
+import static org.jacoco.core.internal.analysis.CounterImpl.COUNTER_1_0;
 
 public class ClassCoverage extends CoverageNode {
 

@@ -10,17 +10,20 @@
  */
 package br.usp.each.saeg.badua.cli;
 
-import static org.jacoco.report.internal.xml.XMLCoverageWriter.createChild;
+import br.usp.each.saeg.badua.core.analysis.ClassCoverage;
+import br.usp.each.saeg.badua.core.analysis.CoverageNode;
+import br.usp.each.saeg.badua.core.analysis.MethodCoverage;
+import br.usp.each.saeg.badua.core.analysis.SourceCodeLine;
+import br.usp.each.saeg.badua.core.util.Edge;
+import org.jacoco.core.analysis.ICounter;
+import org.jacoco.report.internal.xml.XMLDocument;
+import org.jacoco.report.internal.xml.XMLElement;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import br.usp.each.saeg.badua.core.analysis.*;
-import br.usp.each.saeg.badua.core.util.Edge;
-import org.jacoco.core.analysis.ICounter;
-import org.jacoco.report.internal.xml.XMLDocument;
-import org.jacoco.report.internal.xml.XMLElement;
+import static org.jacoco.report.internal.xml.XMLCoverageWriter.createChild;
 
 public class XMLCoverageWriter {
 
@@ -44,6 +47,7 @@ public class XMLCoverageWriter {
     private static void writeClass(final ClassCoverage c, final XMLElement parent,
                                    final boolean edges, final boolean edgePairs) throws IOException {
         final XMLElement element = createChild(parent, "class", c.getName());
+        element.attr("sourceFile", c.sourceFile);
         for (final MethodCoverage m : c.getMethods()) {
             writeMethod(m, element, edges, edgePairs);
         }
@@ -101,7 +105,7 @@ public class XMLCoverageWriter {
         writeCounter(node.getClassCounter(), "CLASS", parent);
     }
 
-    private static void writeLineCounter(ClassCoverage node, final String type, XMLElement parent) throws IOException {
+    /*private static void writeLineCounter(ClassCoverage node, final String type, XMLElement parent) throws IOException {
         int lineCounter = 0;
         for (MethodCoverage m: node.getMethods()) {
             final XMLElement element = parent.element("counter");
@@ -109,7 +113,7 @@ public class XMLCoverageWriter {
             element.attr("missed", m.getLineCounter().getMissedCount());
             element.attr("covered", m.getLineCounter().getCoveredCount());
         }
-    }
+    }*/
 
     private static void writeCounter(final ICounter counter, final String type, final XMLElement parent)
             throws IOException {

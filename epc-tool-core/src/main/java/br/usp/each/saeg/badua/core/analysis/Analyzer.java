@@ -10,18 +10,18 @@
  */
 package br.usp.each.saeg.badua.core.analysis;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.jacoco.core.internal.analysis.StringPool;
-import org.objectweb.asm.ClassReader;
-
 import br.usp.each.saeg.badua.core.data.ExecutionData;
 import br.usp.each.saeg.badua.core.data.ExecutionDataStore;
 import br.usp.each.saeg.badua.core.internal.ContentTypeDetector;
 import br.usp.each.saeg.badua.core.internal.data.CRC64;
 import br.usp.each.saeg.commons.io.Files;
+import org.jacoco.core.internal.analysis.StringPool;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.ClassNode;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class Analyzer {
 
@@ -50,11 +50,13 @@ public class Analyzer {
     public void analyze(final byte[] buffer, final boolean edges, final boolean edgePairs,
                         final File graphwizFile) {
         final long classId = CRC64.checksum(buffer);
+        final ClassNode classNode = new ClassNode();
         final ClassReader reader = new ClassReader(buffer);
         final ClassAnalyzer ca = new ClassAnalyzer(getData(classId, reader.getClassName()), stringPool, edges,
-                edgePairs, graphwizFile);
+                edgePairs, graphwizFile, classNode);
         reader.accept(ca, DEFAULT);
         final ClassCoverage coverage = ca.getCoverage();
+        coverage.sourceFile = classNode.sourceFile;
         if (coverage.getCounter().getTotalCount() > 0) {
             visitor.visitCoverage(coverage);
         }
