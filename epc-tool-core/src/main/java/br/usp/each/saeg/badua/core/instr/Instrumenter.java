@@ -10,19 +10,18 @@
  */
 package br.usp.each.saeg.badua.core.instr;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
+import br.usp.each.saeg.badua.core.internal.data.CRC64;
+import br.usp.each.saeg.badua.core.internal.instr.ClassInstrumenter;
+import br.usp.each.saeg.badua.core.runtime.IExecutionDataAccessorGenerator;
+import br.usp.each.saeg.commons.io.Files;
 import org.jacoco.core.internal.ContentTypeDetector;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
-import br.usp.each.saeg.badua.core.internal.data.CRC64;
-import br.usp.each.saeg.badua.core.internal.instr.ClassInstrumenter;
-import br.usp.each.saeg.badua.core.runtime.IExecutionDataAccessorGenerator;
-import br.usp.each.saeg.commons.io.Files;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class Instrumenter {
 
@@ -64,6 +63,7 @@ public class Instrumenter {
         final String message = String.format("Error while instrumenting class %s.", name);
         final IOException ex = new IOException(message);
         ex.initCause(cause);
+        ex.setStackTrace(cause.getStackTrace());
         return ex;
     }
 

@@ -10,10 +10,12 @@
  */
 package br.usp.each.saeg.badua.agent.rt.internal;
 
-import java.lang.instrument.Instrumentation;
-
 import br.usp.each.saeg.badua.core.runtime.IRuntime;
 import br.usp.each.saeg.badua.core.runtime.ModifiedSystemClassRuntime;
+
+import java.lang.instrument.Instrumentation;
+import java.security.CodeSource;
+import java.util.jar.JarFile;
 
 public final class PreMain {
 
@@ -22,9 +24,18 @@ public final class PreMain {
     }
 
     public static void premain(final String opts, final Instrumentation inst) throws Exception {
-        final IRuntime runtime = ModifiedSystemClassRuntime.createFor(inst, "java/lang/UnknownError");
-        runtime.startup(Agent.getInstance().getData());
-        inst.addTransformer(new CoverageTransformer(runtime, PreMain.class.getPackage().getName(), false, true));
+        final CodeSource codeSource = PreMain.class.getProtectionDomain().getCodeSource();
+        inst.appendToBootstrapClassLoaderSearch(new JarFile(codeSource.getLocation().getPath()));
+
+        Init.init(inst);
+    }
+
+    public static class Init {
+        public static void init(final Instrumentation inst) throws Exception {
+            final IRuntime runtime = ModifiedSystemClassRuntime.createFor(inst, "java/lang/UnknownError");
+            runtime.startup(Agent.getInstance().getData());
+            inst.addTransformer(new CoverageTransformer(runtime, PreMain.class.getPackage().getName(), false, false));
+        }
     }
 
 }

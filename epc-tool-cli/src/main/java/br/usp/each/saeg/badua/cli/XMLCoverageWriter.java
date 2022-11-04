@@ -47,7 +47,7 @@ public class XMLCoverageWriter {
     private static void writeClass(final ClassCoverage c, final XMLElement parent,
                                    final boolean edges, final boolean edgePairs) throws IOException {
         final XMLElement element = createChild(parent, "class", c.getName());
-        element.attr("sourceFile", c.sourceFile);
+        element.attr("sourcefile", c.sourceFile);
         for (final MethodCoverage m : c.getMethods()) {
             writeMethod(m, element, edges, edgePairs);
         }

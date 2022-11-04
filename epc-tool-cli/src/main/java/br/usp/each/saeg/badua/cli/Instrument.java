@@ -10,25 +10,18 @@
  */
 package br.usp.each.saeg.badua.cli;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.MessageFormat;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-
 import br.usp.each.saeg.badua.agent.rt.internal.Offline;
 import br.usp.each.saeg.badua.core.instr.Instrumenter;
 import br.usp.each.saeg.badua.core.runtime.StaticAccessGenerator;
 import br.usp.each.saeg.commons.io.Files;
 import br.usp.each.saeg.commons.time.TimeWatch;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+
+import java.io.*;
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Instrument {
 
@@ -123,6 +116,8 @@ public class Instrument {
 
         } catch (final IOException e) {
             System.err.println("Failed: " + e.getLocalizedMessage());
+            System.err.println("Cause Exception: " + e.getCause());
+            e.printStackTrace();
             System.exit(1);
         }
     }

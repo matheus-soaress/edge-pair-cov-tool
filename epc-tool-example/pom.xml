@@ -28,6 +28,7 @@
 		<argLine>-javaagent:target/dependency/epc-tool-agent-rt-${project.version}-all.jar -Doutput.file=target/epc-tool.ser</argLine>
 		<maven.deploy.skip>true</maven.deploy.skip>
 		<maven.test.skip>true</maven.test.skip>
+		<maven.verify.skip>true</maven.verify.skip>
 	</properties>
 
 	<build>
@@ -54,7 +55,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
+			<!--<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.5.0</version>
@@ -79,11 +80,11 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
+			</plugin>-->
+			<!--<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<!-- Using this version to support requireFileChecksum with Java 6 -->
+				&lt;!&ndash; Using this version to support requireFileChecksum with Java 6 &ndash;&gt;
 				<version>3.0.0-M1</version>
 				<executions>
 					<execution>
@@ -95,7 +96,7 @@
 							<rules>
 								<requireFileChecksum>
 									<file>${project.build.directory}/epc-tool.xml</file>
-<!--									<checksum>b481fddd94ffd06b62a1f717bdfa9f72</checksum>-->
+&lt;!&ndash;									<checksum>b481fddd94ffd06b62a1f717bdfa9f72</checksum>&ndash;&gt;
 									<checksum>767a036a9e01c427156ddcf3d1ba049a</checksum>
 									<type>md5</type>
 								</requireFileChecksum>
@@ -104,16 +105,8 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin>-->
 		</plugins>
 	</build>
-
-	<dependencies>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>epc-tool-cli</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-	</dependencies>
 
 </project>

@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm-commons</artifactId>
-			<version>9.2</version>
+			<version>9.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jacoco</groupId>
@@ -87,8 +87,13 @@
 		<dependency>
 			<groupId>br.usp.each.saeg</groupId>
 			<artifactId>asm-defuse</artifactId>
-			<version>0.0.7</version>
+			<version>0.0.8</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm-analysis</artifactId>
+			<version>9.3</version>
 		</dependency>
 	</dependencies>
 
