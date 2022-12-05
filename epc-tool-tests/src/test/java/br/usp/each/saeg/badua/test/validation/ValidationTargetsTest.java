@@ -10,20 +10,15 @@
  */
 package br.usp.each.saeg.badua.test.validation;
 
-import static br.usp.each.saeg.badua.core.analysis.SourceLineDefUseChain.NONE;
+import br.usp.each.saeg.badua.core.analysis.*;
+import br.usp.each.saeg.badua.core.data.ExecutionDataStore;
+import org.junit.Assert;
+import org.junit.Before;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.junit.Assert;
-import org.junit.Before;
-
-import br.usp.each.saeg.badua.core.analysis.Analyzer;
-import br.usp.each.saeg.badua.core.analysis.ClassCoverage;
-import br.usp.each.saeg.badua.core.analysis.ICoverageVisitor;
-import br.usp.each.saeg.badua.core.analysis.MethodCoverage;
-import br.usp.each.saeg.badua.core.analysis.SourceLineDefUseChain;
-import br.usp.each.saeg.badua.core.data.ExecutionDataStore;
+import static br.usp.each.saeg.badua.core.analysis.SourceLineDefUseChain.NONE;
 
 public abstract class ValidationTargetsTest extends ValidationTest implements ICoverageVisitor {
 
@@ -46,7 +41,7 @@ public abstract class ValidationTargetsTest extends ValidationTest implements IC
         final byte[] bytes = ValidationTestClassLoader.getClassDataAsBytes(target);
         final ExecutionDataStore store = execute(bytes);
         final Analyzer analyzer = new Analyzer(store, this);
-        analyzer.analyze(bytes, false, false, null);
+        analyzer.analyze(bytes, false, false);
         Assert.assertEquals(1, classes.size());
         for (final MethodCoverage coverage : classes.iterator().next().getMethods()) {
             defUses.addAll(coverage.getDefUses());

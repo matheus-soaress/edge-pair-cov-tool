@@ -189,7 +189,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
             insn = insn.getNext();
         }
 
-        methodNode.maxLocals = methodNode.maxLocals + edgeWindows * numOfBlocks(basicBlocks.length);
+        methodNode.maxLocals = methodNode.maxLocals + edgeWindows * numOfBlocks(edges.size());
         methodNode.maxStack = methodNode.maxStack + 6;
 
     }
@@ -266,7 +266,7 @@ public class CoverageMethodTransformer extends MethodTransformer {
             insn = insn.getNext();
         }
 
-        methodNode.maxLocals = methodNode.maxLocals + edgePairWindows * numOfBlocks(basicBlocks.length);
+        methodNode.maxLocals = methodNode.maxLocals + edgePairWindows * numOfBlocks(edgePairs.size());
         methodNode.maxStack = methodNode.maxStack + 6;
 
     }

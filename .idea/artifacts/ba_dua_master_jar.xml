@@ -3,7 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/ba_dua_master_jar</output-path>
     <root id="archive" name="ba-dua-master.jar">
       <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/asm-defuse-master/src/main/java/META-INF/MANIFEST.MF" />
+        <element id="file-copy" path="$PROJECT_DIR$/epc-tool-agent/src/main/java/META-INF/MANIFEST.MF" />
       </element>
       <element id="module-output" name="epc-tool-agent-rt" />
       <element id="module-output" name="epc-tool-core" />

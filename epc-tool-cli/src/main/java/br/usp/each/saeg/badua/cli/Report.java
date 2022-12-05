@@ -10,21 +10,6 @@
  */
 package br.usp.each.saeg.badua.cli;
 
-import static java.lang.String.format;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-
 import br.usp.each.saeg.badua.core.analysis.Analyzer;
 import br.usp.each.saeg.badua.core.analysis.ClassCoverage;
 import br.usp.each.saeg.badua.core.analysis.ICoverageVisitor;
@@ -32,6 +17,14 @@ import br.usp.each.saeg.badua.core.analysis.MethodCoverage;
 import br.usp.each.saeg.badua.core.data.ExecutionDataReader;
 import br.usp.each.saeg.badua.core.data.ExecutionDataStore;
 import br.usp.each.saeg.commons.io.Files;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.String.format;
 
 public class Report {
 
@@ -100,8 +93,6 @@ public class Report {
 
     private final File xmlFile;
 
-    private final File graphwizFile;
-
     private final CoverageVisitor visitor;
 
     private final Analyzer analyzer;
@@ -113,7 +104,6 @@ public class Report {
     public Report(final ReportOptions options) throws IOException {
         classes = options.getClasses();
         xmlFile = options.getXMLFile();
-        graphwizFile = options.getGraphwizFile();
         edges = options.edges();
         edgePairs = options.edgePairs();
 
@@ -137,7 +127,7 @@ public class Report {
         for (final File file : files) {
             final InputStream input = new FileInputStream(file);
             try {
-                analyzer.analyzeAll(input, file.getPath(), edges, edgePairs, graphwizFile);
+                analyzer.analyzeAll(input, file.getPath(), edges, edgePairs);
             } finally {
                 input.close();
             }

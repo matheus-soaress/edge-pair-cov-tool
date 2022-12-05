@@ -10,7 +10,10 @@
  */
 package br.usp.each.saeg.badua.core.analysis;
 
-import br.usp.each.saeg.asm.defuse.*;
+import br.usp.each.saeg.asm.defuse.DefUseAnalyzer;
+import br.usp.each.saeg.asm.defuse.DefUseInterpreter;
+import br.usp.each.saeg.asm.defuse.FlowAnalyzer;
+import br.usp.each.saeg.asm.defuse.Value;
 import br.usp.each.saeg.badua.core.data.ExecutionData;
 import br.usp.each.saeg.badua.core.internal.instr.InstrSupport;
 import br.usp.each.saeg.badua.core.util.Edge;
@@ -24,10 +27,6 @@ import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.*;
 
 import static br.usp.each.saeg.commons.BitSetUtils.valueOf;
@@ -48,16 +47,13 @@ public class ClassAnalyzer extends ClassVisitor {
 
     private boolean edgePairCoverage;
 
-    private File graphwizFile;
-
     public ClassAnalyzer(final ExecutionData execData, final StringPool stringPool, final boolean edgeCoverage,
-                         final boolean edgePairCoverage, final File graphwizFile, final ClassVisitor cv) {
+                         final boolean edgePairCoverage, final ClassVisitor cv) {
         super(Opcodes.ASM9);
         this.execData = execData;
         this.stringPool = stringPool;
         this.edgeCoverage = edgeCoverage;
         this.edgePairCoverage = edgePairCoverage;
-        this.graphwizFile = graphwizFile;
         super.cv = cv;
     }
 
@@ -144,22 +140,6 @@ public class ClassAnalyzer extends ClassVisitor {
                 } else {
                     nodeData = getData(execData.getData(), flowAnalyzer.getBasicBlocks().length);
                     nodeReport(lines, flowAnalyzer, nodeData, methodCoverage);
-                }
-
-                if (graphwizFile != null) {
-                    FileOutputStream output = null;
-                    try {
-                        output = new FileOutputStream(graphwizFile);
-                        //GraphwizGenerator.write(flowAnalyzer, output, methodCoverage, lines, edgeCoverage, edgePairCoverage);
-                    } catch (FileNotFoundException e) {
-                        System.err.println("Failed: " + e.getLocalizedMessage());
-                    } finally {
-                        try {
-                            output.close();
-                        } catch (IOException e) {
-                            System.err.println("Failed: " + e.getLocalizedMessage());
-                        }
-                    }
                 }
 
             }

@@ -10,9 +10,9 @@
  */
 package br.usp.each.saeg.badua.cli;
 
-import java.io.File;
-
 import org.kohsuke.args4j.Option;
+
+import java.io.File;
 
 public class ReportOptions {
 
@@ -32,9 +32,6 @@ public class ReportOptions {
 
     @Option(name = "-xml", usage = "write XML report")
     private File xmlFile;
-
-    @Option(name = "-g", usage = "write Graphwiz representation")
-    private File graphwizFile;
 
     @Option(name = "-edges", usage = "write edge coverage report")
     private boolean edges;
@@ -60,10 +57,6 @@ public class ReportOptions {
 
     public File getXMLFile() {
         return xmlFile;
-    }
-
-    public File getGraphwizFile() {
-        return graphwizFile;
     }
 
     public boolean edges() {

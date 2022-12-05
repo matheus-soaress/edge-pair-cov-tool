@@ -19,7 +19,6 @@ import org.jacoco.core.internal.analysis.StringPool;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -47,13 +46,12 @@ public class Analyzer {
         return new ExecutionData(classId, className, null);
     }
 
-    public void analyze(final byte[] buffer, final boolean edges, final boolean edgePairs,
-                        final File graphwizFile) {
+    public void analyze(final byte[] buffer, final boolean edges, final boolean edgePairs) {
         final long classId = CRC64.checksum(buffer);
         final ClassNode classNode = new ClassNode();
         final ClassReader reader = new ClassReader(buffer);
         final ClassAnalyzer ca = new ClassAnalyzer(getData(classId, reader.getClassName()), stringPool, edges,
-                edgePairs, graphwizFile, classNode);
+                edgePairs, classNode);
         reader.accept(ca, DEFAULT);
         final ClassCoverage coverage = ca.getCoverage();
         coverage.sourceFile = classNode.sourceFile;
@@ -63,9 +61,9 @@ public class Analyzer {
     }
 
     public void analyze(final InputStream input, final String location, final boolean edges,
-                        final boolean edgePairs, final File graphwizFile) throws IOException {
+                        final boolean edgePairs) throws IOException {
         try {
-            analyze(Files.toByteArray(input), edges, edgePairs, graphwizFile);
+            analyze(Files.toByteArray(input), edges, edgePairs);
         } catch (final RuntimeException e) {
             throw analyzeError(location, e);
         }
@@ -79,11 +77,11 @@ public class Analyzer {
     }
 
     public int analyzeAll(final InputStream input, final String location, final boolean edges,
-                          final boolean edgePairs, final File graphwizFile) throws IOException {
+                          final boolean edgePairs) throws IOException {
         final ContentTypeDetector detector = new ContentTypeDetector(input);
         switch (detector.getType()) {
         case ContentTypeDetector.CLASSFILE:
-            analyze(detector.getInputStream(), location, edges, edgePairs, graphwizFile);
+            analyze(detector.getInputStream(), location, edges, edgePairs);
             return 1;
         default:
             return 0;
