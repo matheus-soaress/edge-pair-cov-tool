@@ -14,10 +14,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>br.usp.each.saeg</groupId>
-	<artifactId>epc-tool-parent</artifactId>
+	<artifactId>ba-cf-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>epc-tool-parent</name>
+	<name>ba-cf-parent</name>
 	<url>https://github.com/matheus-soaress/edge-pair-cov-tool</url>
 	<description>
 		Edge-pair coverage for Java - parent project.
@@ -60,17 +60,17 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<license.header.fileLocation>LICENSE-TEMPLATE.txt</license.header.fileLocation>
 		<jacoco.version>0.8.1</jacoco.version>
-		<sonar.jacoco.reportPath>../epc-tool-tests/target/jacoco.exec</sonar.jacoco.reportPath>
-		<sonar.surefire.reportsPath>../epc-tool-tests/target/surefire-reports/</sonar.surefire.reportsPath>
+		<sonar.jacoco.reportPath>../ba-cf-tests/target/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.surefire.reportsPath>../ba-cf-tests/target/surefire-reports/</sonar.surefire.reportsPath>
 	</properties>
 
 	<modules>
-		<module>epc-tool-core</module>
-		<module>epc-tool-agent-rt</module>
-		<module>epc-tool-agent</module>
-		<module>epc-tool-cli</module>
-		<module>epc-tool-tests</module>
-		<module>epc-tool</module>
+		<module>ba-cf-core</module>
+		<module>ba-cf-agent-rt</module>
+		<module>ba-cf-agent</module>
+		<module>ba-cf-cli</module>
+		<module>ba-cf-tests</module>
+		<module>ba-cf</module>
 	</modules>
 
 	<build>
@@ -131,8 +131,9 @@
 							<goal>regex-property</goal>
 						</goals>
 						<configuration>
-							<name>badua.runtime.package.name</name>
-							<value>br.usp.each.saeg.badua.agent.rt.internal_buildNumber</value>
+							<name>bacf.runtime.package.name</name>
+<!--							<value>br.usp.each.saeg.bacf.agent.rt.internal</value>-->
+							<value>br.usp.each.saeg.bacf.agent.rt.internal_buildNumber</value>
 							<regex>buildNumber</regex>
 							<replacement>${buildNumber}</replacement>
 						</configuration>
@@ -249,7 +250,7 @@
 				<jdk>[1.6,)</jdk>
 			</activation>
 			<modules>
-				<module>epc-tool-example</module>
+				<module>ba-cf-example</module>
 			</modules>
 		</profile>
 		<!-- http://openjdk.java.net/jeps/182 -->

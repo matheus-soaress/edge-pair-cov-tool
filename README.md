@@ -1,58 +1,39 @@
-# ba-dua
+# BA-CF
 
-[![Maven Central](https://img.shields.io/maven-central/v/br.usp.each.saeg/ba-dua.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/br.usp.each.saeg/ba-dua)
-[![License](https://img.shields.io/github/license/saeg/ba-dua.svg?style=flat-square)](LICENSE)
-[![DOI](https://zenodo.org/badge/4232/saeg/ba-dua.svg?style=flat-square)](http://dx.doi.org/10.5281/zenodo.11006)
+BA-CF (Bitwise Algorithm supporting Control Flow coverage ou Algoritmo Bit-a-Bit de suporte a cobertura de fluxo de controle) é uma ferramenta de suporte ao teste estrutural baseado em critérios de fluxo de controle para programas compilados em Bytecode, em especial programas Java.
 
-ba-dua (Bitwise Algorithm - powered Definition-Use Association coverage) is an intra-procedural data-flow testing tool for Java programs.
+BA-CF é uma ferramenta experimental e ainda está em construção.
 
-This is an implementation of the bitwise algorithm for data-flow testing proposed in:
-"An efficient bitwise algorithm for intra-procedural data-flow testing coverage". Published in Information Processing Letters. Volume 113 Issue 8, April, 2013. Pages 293-300.
+## Exemplos
 
-The implementation is described in: "Data-flow Testing in the Large". Published in IEEE International Conference on Software Testing, Verification and Validation (ICST) 2014.
+### Instrumentação
 
-ba-dua is still an experimental tool. If you are looking for a general purpose coverage tool we recommend [JaCoCo](http://www.eclemma.org/jacoco/). JaCoCo is definitely the best coverage tool for Java. If you are looking for mutation test we recommend [PIT](http://pitest.org/). If you don't know what data-flow coverage is, you can read [this link](http://www.bullseye.com/coverage.html#other_dataFlow).
-
-## Download
-
-Version `>= 0.3.0` are available at [Maven central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22br.usp.each.saeg%22%20AND%20ba-dua). Older version can be found at [releases](https://github.com/saeg/ba-dua/releases) page.
-
-## Examples
-
-### Offline instrumentation
-
-To instrument Java classes you should use the **instrument** program.
+Para instrumentar as classes use o comando **instrument**. A opção `-edges` instrumenta as classes para rastrear arestas e a opção `-edge-pairs` instrumenta para rastreamento de pares de arestas. 
 
 ```
-java -jar ba-dua-cli-VERSION-all.jar instrument
+java -jar ba-cf-cli-{VERSION}-all.jar instrument
 ```
 
-after instrumentation, you should run the instrumented classes with ba-dua JAR in the *classpath*.
+O .jar da  ba-cf deve estar no *classpath* ao executar as classes instrumentadas.
 
-### Agent instrumentation
+### Relatório
 
-You can instead of offline instrumentation use the Java agent. Java agent instrument classes as they are loaded by the JVM. Just include ba-dua-agent-rt-VERSION-all.jar in the JVM Java agent option.
-
-### Reporting
-
-After program execution a new file (coverage.ser) will be created in your current directory. You should use the **report** program to assess the coverage. For default, the program print out the coverage for each class `(# of covered DU within the class/# of DU within the class)`. There is an option `-show-methods` that will print out the coverage for each method `(# of covered DU within the method/# of DU within the method)`. Alternatively, you can export a XML report with the option `-xml`. If the classes were compiled with debug information (lines and variables) the XML report will include each actual def-use pair (DU) that are covered or not.
+Após a execução, o arquivo coverage.ser será criado no seu diretório atual. Use o programa **report** para obter a cobertura. A opção `-edge-s` deve ser usada para obter a cobertura de programas instrumentados para rastreamento de arestas e `-edge-pairs` para pares de arestas, pois por padrão a ferramenta obtém a cobertura de classes instrumentadas para rastrear nós. Por padrão, o programa exibe o cobertura de cada classe `(# de requisitos cobertos na classe/# de requisitos na classe)`. A opção `-show-methods` exibe a cobertura por método `(# de requisitos cobertos no método/# de requisitos no método)`. Também é possível exportar o relatório no formato XML usando a opção `-xml` e especificando o local e nome do arquivo.
 
 ```
-java -jar ba-dua-cli-VERSION-all.jar report
+java -jar ba-cf-cli-{VERSION}-all.jar report
 ```
 
-## License
+## Licença
 
-ba-dua is licensed under the Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)
+BA-CF é licenciada sob a Eclipse Public License - v 1.0 (http://www.eclipse.org/legal/epl-v10.html)
 
-## Notice
+## Nota
 
-ba-dua JAR is distributed with some classes from ASM (http://asm.ow2.org), args4j (http://args4j.kohsuke.org) and JaCoCo (http://www.eclemma.org/jacoco/) embedded (shaded). The command line interface tools were inspired by the pull request #86 from JaCoCo.
+A BA-CF é construída com algumas classes da ASM (http://asm.ow2.org), args4j (http://args4j.kohsuke.org) e JaCoCo (http://www.eclemma.org/jacoco/) incorporadas. As ferramentas de interface de linha de comando foram inspiradas no pull request #86 da JaCoCo.
 
-- ASM is distributed under the BSD License.
-- args4j is distributed under the MIT License.
-- JaCoCo is distributed under the Eclipse Public License - v 1.0.
+- ASM é distribuída sob a BSD License.
+- args4j é distribuída sob a MIT License.
+- JaCoCo é distribuída sob a Eclipse Public License - v 1.0.
 
-*Any other included library is of our own and is authorized to be distributed.*
-
-During our implementation we relied in part on JaCoCo's code. Any similarity is no mere coincidence.
+Durante nossa implementação, nos baseamos em parte no código da BADUA e JaCoCo. Qualquer semelhança não é mera coincidência.

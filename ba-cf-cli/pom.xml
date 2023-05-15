@@ -1,0 +1,163 @@
+<!--
+
+    Copyright (c) 2022, 2022 University of Sao Paulo and Contributors.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+    Contributors:
+        Matheus Soares - initial API and implementation and/or initial documentation
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>br.usp.each.saeg</groupId>
+		<artifactId>ba-cf-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>ba-cf-cli</artifactId>
+	<packaging>jar</packaging>
+	<name>ba-cf-cli</name>
+	<url>https://github.com/matheus-soaress/edge-pair-cov-tool</url>
+	<description>BA-CF CLI</description>
+
+	<properties>
+		<license.header.fileLocation>../LICENSE-TEMPLATE.txt</license.header.fileLocation>
+		<maven.source.skip>true</maven.source.skip>
+		<maven.javadoc.skip>true</maven.javadoc.skip>
+		<gpg.skip>true</gpg.skip>
+		<maven.deploy.skip>true</maven.deploy.skip>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<shadedArtifactAttached>true</shadedArtifactAttached>
+							<shadedClassifierName>all</shadedClassifierName>
+							<minimizeJar>true</minimizeJar>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+										<exclude>META-INF/maven/**</exclude>
+									</excludes>
+								</filter>
+								<filter>
+									<artifact>org.jacoco:org.jacoco.core</artifact>
+									<excludes>
+										<exclude>org/jacoco/core/jacoco.properties</exclude>
+										<exclude>about.html</exclude>
+									</excludes>
+								</filter>
+								<filter>
+									<artifact>org.jacoco:org.jacoco.report</artifact>
+									<excludes>
+										<exclude>org/jacoco/report/xml/report.dtd</exclude>
+										<exclude>org/jacoco/report/internal/html/resources/*</exclude>
+										<exclude>about.html</exclude>
+									</excludes>
+								</filter>
+								<filter>
+									<artifact>args4j:args4j</artifact>
+									<excludes>
+										<exclude>LICENSE</exclude>
+										<exclude>OSGI-OPT/**</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<relocations>
+								<relocation>
+									<pattern>br.usp.each.saeg.bacf.agent.rt.internal</pattern>
+									<shadedPattern>${bacf.runtime.package.name}</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.objectweb.asm</pattern>
+									<shadedPattern>br.usp.each.saeg.bacf.asm</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>br.usp.each.saeg.asm.defuse</pattern>
+									<shadedPattern>br.usp.each.saeg.bacf.asm.defuse</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.kohsuke.args4j</pattern>
+									<shadedPattern>br.usp.each.saeg.bacf.args4j</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>br.usp.each.saeg.commons</pattern>
+									<shadedPattern>br.usp.each.saeg.bacf.commons</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.jacoco</pattern>
+									<shadedPattern>br.usp.each.saeg.bacf.jacoco</shadedPattern>
+								</relocation>
+							</relocations>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>br.usp.each.saeg.bacf.cli.Main</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ba-cf-agent-rt</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>org.jacoco.report</artifactId>
+			<version>${jacoco.version}</version>
+			<!-- Avoid conflicts with asm provided by asm-defuse -->
+			<!-- The API should be the same -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.ow2.asm</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>args4j</groupId>
+			<artifactId>args4j</artifactId>
+			<version>2.32</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>ba-cf-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>org.jacoco.core</artifactId>
+			<version>${jacoco.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>br.usp.each.saeg</groupId>
+			<artifactId>saeg-commons</artifactId>
+			<version>0.0.5</version>
+		</dependency>
+    </dependencies>
+
+</project>

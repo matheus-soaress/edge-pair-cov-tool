@@ -6,13 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="epc-tool-cli" />
-        <module name="epc-tool-agent" />
-        <module name="epc-tool-agent-rt" />
+        <module name="ba-cf-agent" />
+        <module name="ba-cf-tests" />
+        <module name="ba-cf-cli" />
+        <module name="ba-cf-agent-rt" />
         <module name="asm-defuse" />
-        <module name="epc-tool-example" />
-        <module name="epc-tool-tests" />
-        <module name="epc-tool-core" />
+        <module name="ba-cf-core" />
+        <module name="ba-cf-example" />
       </profile>
     </annotationProcessing>
   </component>
