@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="ba-dua-master:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/ba_dua_master_jar</output-path>
-    <root id="archive" name="ba-dua-master.jar">
+  <artifact type="jar" name="ba-cf-master:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ba_cf_master_jar</output-path>
+    <root id="archive" name="ba-cf-master.jar">
       <element id="directory" name="META-INF">
         <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
       </element>
