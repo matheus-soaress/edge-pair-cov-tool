@@ -35,5 +35,3 @@ A BA-CF é construída com algumas classes da ASM (http://asm.ow2.org), args4j (
 - ASM é distribuída sob a BSD License.
 - args4j é distribuída sob a MIT License.
 - JaCoCo é distribuída sob a Eclipse Public License - v 1.0.
-
-Durante nossa implementação, nos baseamos em parte no código da BADUA e JaCoCo. Qualquer semelhança não é mera coincidência.
